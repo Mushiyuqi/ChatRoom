@@ -10,6 +10,8 @@ qt_add_executable(ChatRoom
     mainwindow.h mainwindow.cpp
     mainwindow.ui
     main.cpp
+    resource.qrc
+    logindialog.h logindialog.cpp logindialog.ui
 )
 
 target_compile_features(ChatRoom PRIVATE cxx_std_20)
