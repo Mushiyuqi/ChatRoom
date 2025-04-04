@@ -30,7 +30,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/chat.png</normaloff>:/chat.png</iconset>
+    <normaloff>:/resource/chat.png</normaloff>:/resource/chat.png</iconset>
   </property>
   <property name="documentMode">
    <bool>false</bool>
