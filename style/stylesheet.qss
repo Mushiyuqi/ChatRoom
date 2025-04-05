@@ -1,0 +1,21 @@
+QDialog#LoginDialog, #RegisterDialog{
+background: qlineargradient(
+    x1: 0, y1: 1,     /* 起点坐标（0~1） */
+    x2: 1, y2: 0,     /* 终点坐标（0~1） */
+    stop: 0 #EEE5DE,   /* 在 0% 位置的颜色 */
+    stop: 0.5 #CDC5BF, /* 在 50% 位置的颜色 */
+    stop: 1 #8B8682    /* 在 100% 位置的颜色 */
+);
+}
+
+#user_label, #pass_label{
+    color:black
+}
+
+#err_tip[state='normal']{
+    color: green
+}
+
+#err_tip[state='err']{
+    color: #EE2C2C
+}
