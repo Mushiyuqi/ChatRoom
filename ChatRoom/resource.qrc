@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/chat.png</file>
+        <file>resource/ice.jpg</file>
+        <file>style/stylesheet.qss</file>
+    </qresource>
+</RCC>
