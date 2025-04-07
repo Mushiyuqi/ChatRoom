@@ -3,7 +3,14 @@ project(GateServer)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(GateServer main.cpp)
+add_executable(GateServer main.cpp
+        CServer.cpp
+        CServer.h
+        const.h
+        HttpConnection.cpp
+        HttpConnection.h
+        LogicSystem.cpp
+        LogicSystem.h)
 
 # 设置find package策略
 cmake_policy(SET CMP0167 NEW)
