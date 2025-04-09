@@ -6,6 +6,7 @@ CServer::CServer(net::io_context& ioc, const unsigned short port):
 }
 
 void CServer::Start() {
+    // todo 认为CServer的设计存在问题 socket的使用有问题
     auto self = shared_from_this();
     m_acceptor.async_accept(m_socket, [this, self](const std::error_code ec) {
         try {
@@ -15,7 +16,7 @@ void CServer::Start() {
                 return;
             }
 
-            // 创建连接, HttpConnection 管理一个连接
+            // 创建连接 HttpConnection 管理一个连接
             std::make_shared<HttpConnection>(std::move(m_socket))->Start();
             // 继续监听其他连接
             Start();

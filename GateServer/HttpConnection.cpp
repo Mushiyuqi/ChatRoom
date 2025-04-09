@@ -12,10 +12,8 @@ void HttpConnection::Start() {
                 std::cerr << "HttpConnection::Start() Error " << ec.message() << std::endl;
                 return;
             }
-
             // 忽略len参数
             boost::ignore_unused(len);
-
             // 处理请求
             HandleRequest();
             CheckDeadline();
