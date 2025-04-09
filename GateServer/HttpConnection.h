@@ -15,8 +15,16 @@ private:
     void WriteResponse();
     void HandleRequest();
 
+    // 处理URL
+    void PreParseGetParam();
+
     // HttpConnection 维护的连接
     tcp::socket m_socket;
+
+    // Get 请求路由
+    std::string m_get_url;
+    // Get 请求参数
+    std::unordered_map<std::string, std::string> m_get_params;
 
     // 读写缓冲区 8kb
     beast::flat_buffer m_buffer{8192};

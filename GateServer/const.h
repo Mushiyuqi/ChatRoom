@@ -5,6 +5,9 @@
 #include <memory>
 #include <iostream>
 #include <map>
+#include <unordered_map>
+#include <cctype>
+#include <cassert>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
