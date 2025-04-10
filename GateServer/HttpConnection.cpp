@@ -30,8 +30,6 @@ void HttpConnection::Start() {
     });
 }
 
-
-
 void HttpConnection::CheckDeadline() {
     auto self = shared_from_this();
     // 设置定时器
@@ -59,22 +57,36 @@ void HttpConnection::HandleRequest() {
     m_response.version(m_request.version());
     // 设置短连接
     m_response.keep_alive(false);
-
+    // 处理Get请求
     if (m_request.method() == http::verb::get) {
-        // 处理get请求
-        bool success = LogicSystem::GetInstance().HandleGet(m_request.target(), shared_from_this());
-        if (!success) {
-            // 设置状态码为404
+        // 解析URL
+        PreParseGetParam();
+        // 处理请求
+        if (!LogicSystem::GetInstance().HandleGet(m_get_url, shared_from_this())) {
+            // 处理失败设置返回内容
             m_response.result(http::status::not_found);
-            // 设置响应类型为text/plain
             m_response.set(http::field::content_type, "text/plain");
-            // 设置响应体
             beast::ostream(m_response.body()) << "Not Found";
-            // 回包
             WriteResponse();
             return;
         }
-
+        // 返回数据
+        m_response.result(http::status::ok);
+        m_response.set(http::field::server, "GateServer");
+        WriteResponse();
+    }
+    // 处理Post请求
+    if (m_request.method() == http::verb::post) {
+        // 处理请求
+        if (!LogicSystem::GetInstance().HandlePost(m_request.target(), shared_from_this())) {
+            // 处理失败设置返回内容
+            m_response.result(http::status::not_found);
+            m_response.set(http::field::content_type, "text/plain");
+            beast::ostream(m_response.body()) << "Not Found";
+            WriteResponse();
+            return;
+        }
+        // 返回数据
         m_response.result(http::status::ok);
         m_response.set(http::field::server, "GateServer");
         WriteResponse();
@@ -118,29 +130,26 @@ void HttpConnection::PreParseGetParam() {
 }
 
 // 将单个十进制数字转换为对应的十六进制字符
-unsigned char ToHex(unsigned char x)
-{
-    return  x > 9 ? x + 55 : x + 48;
+unsigned char ToHex(unsigned char x) {
+    return x > 9 ? x + 55 : x + 48;
 }
 
 // 将单个十六进制字符转换为对应的十进制数字
-unsigned char FromHex(unsigned char x)
-{
+unsigned char FromHex(unsigned char x) {
     unsigned char y;
     if (x >= 'A' && x <= 'Z') y = x - 'A' + 10;
     else if (x >= 'a' && x <= 'z') y = x - 'a' + 10;
     else if (x >= '0' && x <= '9') y = x - '0';
-    else assert(0);
+    else
+        assert(0);
     return y;
 }
 
 // 实现url编码
-std::string UrlEncode(const std::string& str)
-{
+std::string UrlEncode(const std::string& str) {
     std::string strTemp = "";
     size_t length = str.length();
-    for (size_t i = 0; i < length; i++)
-    {
+    for (size_t i = 0; i < length; i++) {
         //判断是否仅有数字和字母构成
         if (isalnum((unsigned char)str[i]) ||
             (str[i] == '-') ||
@@ -150,8 +159,7 @@ std::string UrlEncode(const std::string& str)
             strTemp += str[i];
         else if (str[i] == ' ') //为空字符
             strTemp += "+";
-        else
-        {
+        else {
             //其他字符需要提前加%并且高四位和低四位分别转为16进制
             strTemp += '%';
             strTemp += ToHex((unsigned char)str[i] >> 4);
@@ -162,17 +170,14 @@ std::string UrlEncode(const std::string& str)
 }
 
 // 实现url解码
-std::string UrlDecode(const std::string& str)
-{
+std::string UrlDecode(const std::string& str) {
     std::string strTemp = "";
     size_t length = str.length();
-    for (size_t i = 0; i < length; i++)
-    {
+    for (size_t i = 0; i < length; i++) {
         //还原+为空
         if (str[i] == '+') strTemp += ' ';
-        //遇到%将后面的两个字符从16进制转为char再拼接
-        else if (str[i] == '%')
-        {
+            //遇到%将后面的两个字符从16进制转为char再拼接
+        else if (str[i] == '%') {
             assert(i + 2 < length);
             unsigned char high = FromHex((unsigned char)str[++i]);
             unsigned char low = FromHex((unsigned char)str[++i]);

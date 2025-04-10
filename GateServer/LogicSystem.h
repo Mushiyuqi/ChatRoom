@@ -12,8 +12,11 @@ public:
     static LogicSystem& GetInstance();
 
     bool HandleGet(const std::string&, std::shared_ptr<HttpConnection>);
+    bool HandlePost(const std::string&, std::shared_ptr<HttpConnection>);
     // 注册get请求的处理函数
     void RegisterGet(const std::string&, const HttpHandler&);
+    // 注册post请求的处理函数
+    void RegisterPost(const std::string&, const HttpHandler&);
 
 private:
     LogicSystem();

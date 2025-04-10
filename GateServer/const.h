@@ -8,8 +8,15 @@
 #include <unordered_map>
 #include <cctype>
 #include <cassert>
+#include <json/json.h>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+
+enum ErrorCodes {
+    Success = 0,
+    ErrorJson = 1001,
+    RPCFailed = 1002,
+};
