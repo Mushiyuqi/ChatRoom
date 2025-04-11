@@ -1,13 +1,16 @@
 #pragma once
 
+#include <memory>
+#include <iostream>
+#include <mutex>
 #include <QWidget>
 #include <functional>
 #include <QStyle>
 #include <QRegularExpression>
-#include <memory>
-#include <iostream>
-#include <mutex>
 #include <QNetworkReply>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QNetworkAccessManager>
 
 /**
  * @brief repolish 刷新qss

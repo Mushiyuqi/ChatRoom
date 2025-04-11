@@ -1,5 +1,10 @@
 #include "httpmanager.h"
 
+HttpManager::~HttpManager()
+{
+    qDebug() << "HttpManager::~HttpManager destructed" ;
+}
+
 HttpManager& HttpManager::GetInstance() {
     static HttpManager instance;
     return instance;
@@ -8,6 +13,7 @@ HttpManager& HttpManager::GetInstance() {
 HttpManager::HttpManager() {
     // 绑定信号与槽
     connect(this, &HttpManager::sig_http_finish, this, &HttpManager::slot_http_finish);
+    qDebug() << "HttpManager::HttpManager created" ;
 }
 
 void HttpManager::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod)
@@ -18,12 +24,12 @@ void HttpManager::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setHeader(QNetworkRequest::ContentLengthHeader, QByteArray::number(data.length()));
 
-    // 做闭包
-    auto self = shared_from_this();
+    // 静态成员变量程序结束时释放 做闭包
+    // std::shared_ptr<HttpManager> self = shared_from_this();
 
     // 异步发送post请求, reply指针需要自己回收
     QNetworkReply* reply = m_manager.post(request, data);
-    QObject::connect(reply, &QNetworkReply::finished, [this, self, reply, req_id, mod](){
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, req_id, mod](){
         // 处理错误情况
         if(reply->error() != QNetworkReply::NoError){
             qDebug() << "HttpManager::PostHttpReq ERROR " << reply->errorString();

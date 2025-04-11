@@ -3,24 +3,24 @@
 #include <QUrl>
 #include <QObject>
 #include <QNetworkAccessManager>
-#include <QJsonObject>
 #include <QJsonDocument>
 #include "global.h"
 
-class HttpManager : public QObject, public std::enable_shared_from_this<HttpManager>{
+class HttpManager:public QObject, public std::enable_shared_from_this<HttpManager>{
     Q_OBJECT
 public:
-    ~HttpManager() = default;
+    ~HttpManager();
     HttpManager(const HttpManager&) = delete;
     HttpManager& operator=(const HttpManager&) = delete;
 
     static HttpManager& GetInstance();
 
+    // 发送post请求
+    void PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod);
+
 private:
     HttpManager();
     QNetworkAccessManager m_manager;
-    // 发送post请求
-    void PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod);
 
 private slots:
     // 向不同模块分发http请求的结果
