@@ -18,6 +18,7 @@ qt_add_executable(ChatRoom
     global.h
     global.cpp
     httpmanager.h httpmanager.cpp
+    config.ini
 )
 
 
@@ -38,12 +39,23 @@ set_target_properties(ChatRoom PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+# 将config.ini打包到构建目录方便调试
+configure_file(
+    "${CMAKE_SOURCE_DIR}/config.ini"
+    "${CMAKE_BINARY_DIR}/config.ini"
+    COPYONLY  # 纯拷贝，不替换变量
+)
+
+# GNU 标准安装路径
 include(GNUInstallDirs)
 install(TARGETS ChatRoom
     BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} # 静态库
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} # 动态库
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} # 可执行文件
 )
+# 将config.ini安装到bin目录
+install(FILES config.ini DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 qt_finalize_executable(ChatRoom)
 

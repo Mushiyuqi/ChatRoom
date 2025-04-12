@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include "global.h"
 
-class HttpManager:public QObject, public std::enable_shared_from_this<HttpManager>{
+class HttpManager:public QObject{
     Q_OBJECT
 public:
     ~HttpManager();
