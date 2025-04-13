@@ -1,5 +1,6 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
+#include "VerifyGrpcClient.h"
 
 LogicSystem::LogicSystem() {
     RegisterGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
@@ -15,9 +16,9 @@ LogicSystem::LogicSystem() {
             << std::endl << std::endl;
         }
     });
-    RegisterPost("/get_varifycode", [](std::shared_ptr<HttpConnection> connection) {
+    RegisterPost("/get_verifycode", [](std::shared_ptr<HttpConnection> connection) {
         auto body_str = beast::buffers_to_string(connection->m_request.body().data());
-        std::cout << "Url:/get_varifycode receive body is " << body_str << std::endl;
+        std::cout << "Url:/get_verifycode receive body is " << body_str << std::endl;
         // 设置返回数据类型
         connection->m_response.set(http::field::content_type, "text/json");
         // 解析json数据
@@ -36,8 +37,10 @@ LogicSystem::LogicSystem() {
         }
         // 读取数据
         auto email = src_root["email"].asString();
+        // 发送并获取验证码
+        auto response = VerifyGrpcClient::GetInstance().GetVerifyCode(email);
         // 设置返回数据
-        root["error"] = ErrorCodes::Success;
+        root["error"] = response.error();
         root["email"] = email;
         std::string json_str = root.toStyledString();
         beast::ostream(connection->m_response.body()) << json_str;

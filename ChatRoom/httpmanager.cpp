@@ -13,7 +13,7 @@ HttpManager& HttpManager::GetInstance() {
 HttpManager::HttpManager() {
     // 绑定信号与槽
     connect(this, &HttpManager::sig_http_finish, this, &HttpManager::slot_http_finish);
-    qDebug() << "HttpManager::HttpManager created" ;
+    qDebug() << "HttpManager::HttpManager constructed" ;
 }
 
 void HttpManager::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod)

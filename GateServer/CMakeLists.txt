@@ -7,10 +7,25 @@ add_executable(GateServer main.cpp
         CServer.cpp
         CServer.h
         const.h
+        config.ini
         HttpConnection.cpp
         HttpConnection.h
         LogicSystem.cpp
-        LogicSystem.h)
+        LogicSystem.h
+        message.proto
+        message.grpc.pb.cc
+        message.grpc.pb.h
+        message.pb.cc
+        message.pb.h
+        VerifyGrpcClient.cpp
+        VerifyGrpcClient.h)
+
+# 将config.ini打包到构建目录方便调试
+configure_file(
+        "${CMAKE_SOURCE_DIR}/config.ini"
+        "${CMAKE_BINARY_DIR}/config.ini"
+        COPYONLY  # 纯拷贝，不替换变量
+)
 
 # 设置find package策略
 cmake_policy(SET CMP0167 NEW)

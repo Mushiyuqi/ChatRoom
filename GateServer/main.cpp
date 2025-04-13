@@ -4,7 +4,7 @@
 int main() {
     try {
         // 端口号
-        unsigned short port = static_cast<unsigned short>(10086);
+        auto port = static_cast<unsigned short>(10086);
         net::io_context ioc{};
         // 检测程序关闭信号
         boost::asio::signal_set signals(ioc, SIGINT, SIGTERM);
