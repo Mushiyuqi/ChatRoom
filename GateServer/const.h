@@ -24,3 +24,6 @@ enum ErrorCodes {
     ErrorJson = 1001,
     RPCFailed = 1002,
 };
+
+class CanfigManager;
+extern CanfigManager gConfigManager;

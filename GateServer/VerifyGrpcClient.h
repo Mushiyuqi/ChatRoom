@@ -1,8 +1,8 @@
 #pragma once
 #include <grpcpp/grpcpp.h>
-#include "const.h"
 #include "message.grpc.pb.h"
 #include "message.pb.h"
+#include "const.h"
 
 using grpc::Channel;
 using grpc::Status;

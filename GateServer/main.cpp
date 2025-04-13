@@ -1,10 +1,17 @@
 #include <iostream>
 #include "CServer.h"
+#include "ConfigManager.h"
+#include "VerifyGrpcClient.h"
 
 int main() {
+    // 初始化获取验证码服务客户端
+    VerifyGrpcClient::GetInstance();
+    // 读取配置文件
+    ConfigManager gConfigManager;
+    const std::string gatePortStr = gConfigManager["GateServer"]["Port"];
     try {
         // 端口号
-        auto port = static_cast<unsigned short>(10086);
+        unsigned short port = std::stoi(gatePortStr);
         net::io_context ioc{};
         // 检测程序关闭信号
         boost::asio::signal_set signals(ioc, SIGINT, SIGTERM);
