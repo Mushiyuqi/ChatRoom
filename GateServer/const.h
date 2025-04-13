@@ -9,6 +9,8 @@
 #include <cctype>
 #include <cassert>
 #include <json/json.h>
+#include <boost/filesystem.hpp>
+#include <boost/operators.hpp>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>

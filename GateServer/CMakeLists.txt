@@ -18,7 +18,9 @@ add_executable(GateServer main.cpp
         message.pb.cc
         message.pb.h
         VerifyGrpcClient.cpp
-        VerifyGrpcClient.h)
+        VerifyGrpcClient.h
+        ConfigManager.cpp
+        ConfigManager.h)
 
 # 将config.ini打包到构建目录方便调试
 configure_file(
@@ -31,13 +33,13 @@ configure_file(
 cmake_policy(SET CMP0167 NEW)
 
 # 添加Boost库的依赖
-find_package(Boost REQUIRED COMPONENTS system filesystem thread)
-target_include_directories(GateServer PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_directories(GateServer PRIVATE
-        Boost::system
+find_package(Boost REQUIRED COMPONENTS filesystem system thread)
+target_link_libraries(GateServer PRIVATE
         Boost::filesystem
+        Boost::system
         Boost::thread
-        Boost::beast)
+        Boost::boost
+)
 
 # 添加Abseil库的依赖
 find_package(absl REQUIRED)
