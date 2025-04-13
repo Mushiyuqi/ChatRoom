@@ -49,6 +49,40 @@ ConfigManager::ConfigManager(const ConfigManager& src) {
 }
 
 ConfigManager::ConfigManager() {
-    boost::filesystem::path currentPath = boost::filesystem::current_path();
+    const boost::filesystem::path currentPath = boost::filesystem::current_path();
+    const boost::filesystem::path configPath = currentPath / "config.ini";
+    std::cout << "ConfigManager::ConfigManager configPath is " << configPath << std::endl;
+    // 处理ini文件
+    boost::property_tree::ptree pt;
+    boost::property_tree::ini_parser::read_ini(configPath.string(), pt);
+    // 提取配置
+    for (const auto& [fst, snd] : pt) {
+        // 获取主树中的配置
+        const ::std::string& sectionName = fst;
+        const boost::property_tree::ptree& sectionTree = snd;
+        // 获取子树中的配置
+        std::map<std::string, std::string> sectionConfig;
+        for (const auto& [fstSub, sndSub] : sectionTree) {
+            const std::string& key = fstSub;
+            const std::string& value = sndSub.get_value<std::string>();
+            sectionConfig[key] = value;
+        }
+        // 添加到配置管理器中
+        SectionInfo sectionInfo;
+        sectionInfo.m_section_datas = sectionConfig;
+        m_config_map[sectionName] = sectionInfo;
+    }
+
+    // 输出所有的section和key-value对
+    for (const auto& [fst, snd] : m_config_map) {
+        // 主树
+        const std::string& section_name = fst;
+        SectionInfo section_config = snd;
+        // 子树
+        std::cout << "[" << section_name << "]" << std::endl;
+        for (const auto& [fstSub, sndSub] : section_config.m_section_datas) {
+            std::cout << fstSub << "=" << sndSub << std::endl;
+        }
+    }
 }
 
