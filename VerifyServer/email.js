@@ -19,12 +19,15 @@ let transport = nodemailer.createTransport({
  * @param {*} mailOptions 发送邮件的参数
  */
 function SendMail(mailOptions) {
+  // 将异步回调包装成Promise
   return new Promise(function (resolve, reject) {
     transport.sendMail(mailOptions, function (error, info) {
       if (error) {
+        // 异常返回
         console.log(error)
         reject(error)
       } else {
+        // 正常返回
         console.log('邮件已发送成功: ' + info.response)
         resolve(info.response)
       }
