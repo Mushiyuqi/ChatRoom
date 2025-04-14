@@ -9,8 +9,8 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH,
 // grpc解析proto
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
 
-const messageProto = protoDescriptor.message
+const message_proto = protoDescriptor.message
 
 // 导出
-module.exports = messageProto
+module.exports = message_proto
 
