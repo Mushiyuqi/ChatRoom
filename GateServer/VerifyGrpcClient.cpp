@@ -6,7 +6,7 @@ VerifyGrpcClient::~VerifyGrpcClient() {
 
 VerifyGrpcClient::VerifyGrpcClient() {
     // 创建通道
-    const std::shared_ptr<Channel> channel = grpc::CreateChannel("0.0.0.0:50051", grpc::InsecureChannelCredentials());
+    const std::shared_ptr<Channel> channel = grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials());
     // sub绑定channel
     m_stub = VerifyService::NewStub(channel);
     std::cout << "VerifyGrpcClient::VerifyGrpcClient() constructed" << std::endl;
