@@ -18,11 +18,12 @@ async function GetVerifyCode(call, callback) {
         uniqueId = captcha.text
         console.log('uniqueId is ', uniqueId)
 
-        // 编辑发送Options
+        // 编辑发送的文本
         let emailText = '你已选择此邮箱地址作为你的 ChatRoom 账户。为验证此电子邮件地址属于你，' +
             '请在电子邮件验证页输入下方验证码：\n\n' + uniqueId + '\n\n此邮件发出三分钟后，验证码过期。\n\n' +
             '你收到此电子邮件的原因：\n' +
             'ChatRoom 会在你选择电子邮件地址为 ChatRoom 账户时提出验证要求。你的 ChatRoom 账户需经过验证才能使用。'
+        // 编辑发送Options
         let mailOptions = {
             from: configModule.email_user,
             to: call.request.email,

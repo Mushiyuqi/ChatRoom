@@ -19,17 +19,17 @@ VerifyGrpcClient& VerifyGrpcClient::GetInstance() {
 
 GetVerifyRsp VerifyGrpcClient::GetVerifyCode(std::string email) const {
     ClientContext context;
-    GetVerifyRsp reply;
+    GetVerifyRsp response;
     GetVerifyReq request;
     request.set_email(email);
     // 发送请求
-    Status status = m_stub->GetVerifyCode(&context, request, &reply);
+    Status status = m_stub->GetVerifyCode(&context, request, &response);
 
     if (status.ok())
-        return reply;
+        return response;
     else {
-        reply.set_error(ErrorCodes::RPCFailed);
-        return reply;
+        response.set_error(ErrorCodes::RPCFailed);
+        return response;
     }
 }
 
