@@ -8,8 +8,7 @@ public:
 
 private:
     tcp::acceptor m_acceptor;
-    net::io_context& _ioc;
-    tcp::socket m_socket;
+
 
 };
 

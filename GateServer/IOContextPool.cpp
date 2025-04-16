@@ -15,7 +15,7 @@ IOContextPool::IOContextPool(std::size_t size): m_io_contexts(size), m_works(siz
 }
 
 IOContextPool::~IOContextPool() {
-    // 停止所有资源
+    // 停止所有资源 符合RAII
     Stop();
     std::cout << "IOContextPool::~IOContextPool destructed" << std::endl;
 }
@@ -34,13 +34,13 @@ boost::asio::io_context& IOContextPool::GetIOContext() {
 }
 
 void IOContextPool::Stop() {
-    // 停止每一个work
-    for(auto& work : m_works) {
-        work.reset();
-    }
     // 停止每一个iocontext
     for (auto& io_context : m_io_contexts) {
         io_context.stop();
+    }
+    // 停止每一个work
+    for(auto& work : m_works) {
+        work.reset();
     }
     // 等待每一个线程结束
     for (auto& thread : m_threads) {

@@ -6,7 +6,16 @@ unsigned char FromHex(unsigned char x);
 std::string UrlEncode(const std::string& str);
 std::string UrlDecode(const std::string& str);
 
-HttpConnection::HttpConnection(tcp::socket socket): m_socket(std::move(socket)) {
+HttpConnection::HttpConnection(boost::asio::io_context& ioc): m_socket(ioc) {
+    std::cout << "HttpConnection::HttpConnection constructed" << std::endl;
+}
+
+HttpConnection::~HttpConnection() {
+    std::cout << "HttpConnection::~HttpConnection destructed" << std::endl;
+}
+
+tcp::socket& HttpConnection::GetSocket() {
+    return m_socket;
 }
 
 void HttpConnection::Start() {
