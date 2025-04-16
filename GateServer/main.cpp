@@ -7,8 +7,7 @@ int main() {
     // 初始化获取验证码服务客户端
     VerifyGrpcClient::GetInstance();
     // 读取配置文件
-    ConfigManager gConfigManager;
-    const std::string gatePortStr = gConfigManager["GateServer"]["Port"];
+    const std::string gatePortStr = ConfigManager::GetInstance()["GateServer"]["Port"];
     try {
         // 端口号
         unsigned short port = std::stoi(gatePortStr);

@@ -13,13 +13,18 @@ struct SectionInfo {
 
 class ConfigManager {
 public:
+    // 禁止拷贝构造和赋值
+    ConfigManager(const ConfigManager&) = delete;
+    ConfigManager& operator=(const ConfigManager& src) = delete;
+
     ~ConfigManager();
     SectionInfo operator[](const std::string& section);
-    ConfigManager& operator=(const ConfigManager& src);
-    ConfigManager(const ConfigManager& src);
-    ConfigManager();
+
+    static ConfigManager& GetInstance();
+
 
 private:
+    ConfigManager();
     // 存储section和key-value对的map
     std::map<std::string, SectionInfo> m_config_map;
 };

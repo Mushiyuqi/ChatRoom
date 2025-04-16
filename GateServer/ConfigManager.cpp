@@ -35,17 +35,9 @@ SectionInfo ConfigManager::operator[](const std::string& section) {
     return m_config_map[section];
 }
 
-ConfigManager& ConfigManager::operator=(const ConfigManager& src) {
-    if (&src == this) {
-        return *this;
-    }
-
-    this->m_config_map = src.m_config_map;
-    return *this;
-}
-
-ConfigManager::ConfigManager(const ConfigManager& src) {
-    this->m_config_map = src.m_config_map;
+ConfigManager& ConfigManager::GetInstance() {
+    static ConfigManager instance;
+    return instance;
 }
 
 ConfigManager::ConfigManager() {
