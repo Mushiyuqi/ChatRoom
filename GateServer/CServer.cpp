@@ -6,7 +6,6 @@ CServer::CServer(net::io_context& ioc, const unsigned short port):
 }
 
 void CServer::Start() {
-    // todo 认为CServer的设计存在问题 socket的使用有问题
     auto self = shared_from_this();
     m_acceptor.async_accept(m_socket, [this, self](const std::error_code ec) {
         try {

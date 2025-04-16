@@ -20,7 +20,9 @@ add_executable(GateServer main.cpp
         VerifyGrpcClient.cpp
         VerifyGrpcClient.h
         ConfigManager.cpp
-        ConfigManager.h)
+        ConfigManager.h
+        IOContextPool.cpp
+        IOContextPool.h)
 
 # 将config.ini打包到构建目录方便调试
 configure_file(
