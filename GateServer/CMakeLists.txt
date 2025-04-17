@@ -35,42 +35,36 @@ configure_file(
 
 # 设置find package策略
 cmake_policy(SET CMP0167 NEW)
-
-# 添加Boost库的依赖
+# 添加依赖
 find_package(Boost REQUIRED COMPONENTS filesystem system thread)
+find_package(absl REQUIRED)
+find_package(Protobuf REQUIRED)
 target_link_libraries(GateServer PRIVATE
+        # 添加Boost库的依赖
         Boost::filesystem
         Boost::system
         Boost::thread
         Boost::boost
-)
-
-# 添加Abseil库的依赖
-find_package(absl REQUIRED)
-target_link_libraries(GateServer PRIVATE
+        # 添加Abseil库的依赖
         absl::log_internal_check_op
         absl::cord
         absl::strings
         absl::base
         absl::synchronization
-)
-
-# 添加Protobuf库的依赖
-find_package(Protobuf REQUIRED)
-target_link_libraries(GateServer PRIVATE
+        # 添加Protobuf库的依赖
         protobuf::libprotobuf
         protobuf::libprotoc
         protobuf::libprotobuf-lite
-)
-
-# 添加grpc库的依赖
-target_link_libraries(GateServer PRIVATE
+        # 添加grpc库的依赖
         libgpr.so
         libgrpc.so
         libgrpc++.so
         libgrpc++_reflection.so
         libaddress_sorting.so
+        # 添加JSONCPP库的依赖
+        jsoncpp.so
+        # 添加hiredis库的依赖
+        libhiredis.so
+        # 添加redis-plus-plus库的依赖
+        libredis++.a
 )
-
-# 添加JSONCPP库的依赖
-target_link_libraries(GateServer PRIVATE jsoncpp.so)
