@@ -1,14 +1,13 @@
 #include "VerifyGrpcClient.h"
+#include "ConfigManager.h"
 
 VerifyGrpcClient::~VerifyGrpcClient() {
     std::cout << "VerifyGrpcClient::~VerifyGrpcClient() destructed" << std::endl;
 }
 
-VerifyGrpcClient::VerifyGrpcClient() {
-    // 创建通道
-    const std::shared_ptr<Channel> channel = grpc::CreateChannel("127.0.0.1:50051", grpc::InsecureChannelCredentials());
-    // sub绑定channel
-    m_stub = VerifyService::NewStub(channel);
+VerifyGrpcClient::VerifyGrpcClient()
+    : m_connPool(6, ConfigManager::GetInstance()["VerifyServer"]["Host"],
+                 ConfigManager::GetInstance()["VerifyServer"]["Port"]) {
     std::cout << "VerifyGrpcClient::VerifyGrpcClient() constructed" << std::endl;
 }
 
@@ -17,14 +16,19 @@ VerifyGrpcClient& VerifyGrpcClient::GetInstance() {
     return instance;
 }
 
-GetVerifyRsp VerifyGrpcClient::GetVerifyCode(std::string email) const {
+GetVerifyRsp VerifyGrpcClient::GetVerifyCode(std::string email) {
     ClientContext context;
     GetVerifyRsp response;
     GetVerifyReq request;
+    // 编辑发送请求
     request.set_email(email);
+    // 获取连接
+    auto stub = m_connPool.GetConnection();
     // 发送请求
-    Status status = m_stub->GetVerifyCode(&context, request, &response);
-
+    Status status = stub->GetVerifyCode(&context, request, &response);
+    // 回收连接
+    m_connPool.RecycleConnection(std::move(stub));
+    // 处理返回
     if (status.ok())
         return response;
     else {

@@ -1,15 +1,7 @@
 #pragma once
-#include <grpcpp/grpcpp.h>
-#include "message.grpc.pb.h"
-#include "message.pb.h"
 #include "const.h"
+#include "GRPCConnPool.h"
 
-using grpc::Channel;
-using grpc::Status;
-using grpc::ClientContext;
-using message::GetVerifyReq;
-using message::GetVerifyRsp;
-using message::VerifyService;
 class VerifyGrpcClient {
 public:
     ~VerifyGrpcClient();
@@ -18,11 +10,11 @@ public:
     // 获取单例对象
     static VerifyGrpcClient& GetInstance();
 
-    GetVerifyRsp GetVerifyCode(std::string email) const;
+    GetVerifyRsp GetVerifyCode(std::string email);
 
 private:
     VerifyGrpcClient();
-    // rpc信使
-    std::unique_ptr<VerifyService::Stub> m_stub;
+
+    GRPCConnPool m_connPool;
 };
 
