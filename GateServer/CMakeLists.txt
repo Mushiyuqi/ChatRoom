@@ -24,7 +24,9 @@ add_executable(GateServer main.cpp
         IOContextPool.cpp
         IOContextPool.h
         GRPCConnPool.cpp
-        GRPCConnPool.h)
+        GRPCConnPool.h
+        RedisManager.cpp
+        RedisManager.h)
 
 # 将config.ini打包到构建目录方便调试
 configure_file(
