@@ -17,7 +17,9 @@
 #include <grpcpp/grpcpp.h>
 #include "message.grpc.pb.h"
 #include "message.pb.h"
+extern "C"{
 #include <hiredis/hiredis.h>
+}
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
