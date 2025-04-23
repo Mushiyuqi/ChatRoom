@@ -6,6 +6,7 @@
  * 对于Connection 的资源，使用 RAII 来管理，无需外部Close
  * 保证资源释放，避免内存泄漏
  */
+class RedisConnPool;
 class RedisManager {
 public:
     ~RedisManager();
@@ -14,10 +15,8 @@ public:
 
     static RedisManager& GetInstance();
 
-    bool Connect(const std::string& host, int port);
     bool Get(const std::string &key, std::string& value);
     bool Set(const std::string &key, const std::string &value);
-    bool Auth(const std::string &password);
     bool LPush(const std::string &key, const std::string &value);
     bool LPop(const std::string &key, std::string& value);
     bool RPush(const std::string& key, const std::string& value);
@@ -32,7 +31,6 @@ private:
     RedisManager();
     void Close();
 
-    redisContext* m_connect;
-    redisReply* m_reply;
+    std::unique_ptr<RedisConnPool> m_pool;
 };
 
