@@ -55,7 +55,7 @@ redisContext* RedisConnPool::GetConnection() {
 void RedisConnPool::ReturnConnection(redisContext* context) {
     std::lock_guard<std::mutex> lock(m_mutex);
     if (m_b_stop) {
-        redisFree(context);
+        if (context != nullptr) redisFree(context);
         return;
     }
     m_connections.push(context);

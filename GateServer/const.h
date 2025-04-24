@@ -22,6 +22,7 @@ extern "C"{
 }
 
 #define RedisPoolSize 5
+#define GRPCPoolSize 6
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>

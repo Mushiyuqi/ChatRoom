@@ -6,7 +6,7 @@ VerifyGrpcClient::~VerifyGrpcClient() {
 }
 
 VerifyGrpcClient::VerifyGrpcClient()
-    : m_connPool(6, ConfigManager::GetInstance()["VerifyServer"]["Host"],
+    : m_connPool(GRPCPoolSize, ConfigManager::GetInstance()["VerifyServer"]["Host"],
                  ConfigManager::GetInstance()["VerifyServer"]["Port"]) {
     std::cout << "VerifyGrpcClient::VerifyGrpcClient() constructed" << std::endl;
 }
