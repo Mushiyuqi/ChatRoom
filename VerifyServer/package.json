@@ -12,6 +12,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.13.3",
     "@grpc/proto-loader": "^0.7.13",
+    "ioredis": "^5.6.1",
     "nodemailer": "^6.10.1",
     "svg-captcha": "^1.4.0",
     "uuid": "^11.1.0"
