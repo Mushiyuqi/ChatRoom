@@ -26,7 +26,7 @@ enum ReqId{
 };
 
 enum Modules{
-    REGISTER_MOD = 0,
+    REGISTER_MOD = 0, // 注册模块
 };
 
 enum ErrorCodes{
