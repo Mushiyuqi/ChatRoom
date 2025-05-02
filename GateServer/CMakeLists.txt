@@ -71,4 +71,7 @@ target_link_libraries(GateServer PRIVATE
         libhiredis.so
         # 添加redis-plus-plus库的依赖
         libredis++.a
+        # 添加Mysql Connector C++库的依赖
+        /usr/local/lib/libmysqlcppconn.so
+        /usr/local/lib/libmysqlcppconnx.so
 )
