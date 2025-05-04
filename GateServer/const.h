@@ -24,6 +24,7 @@ extern "C" {
 
 #define RedisPoolSize 5
 #define GRPCPoolSize 6
+#define MysqlPoolSize 5
 #define CodePrefix "code_"
 
 namespace beast = boost::beast; // from <boost/beast.hpp>
@@ -44,11 +45,13 @@ enum ErrorCodes {
     RPCFailed = 1002, //  RPC 请求失败
     VerifyExpired = 1003, // 验证码过期
     VerifyCodeErr = 1004, // 验证码错误
-    UserExist = 1005, // 用户已存在
-    PasswordErr = 1006, // 密码错误
-    EmailNotMatch = 1007, //  邮箱不匹配
-    PasswordUpFailed = 1008, // 密码修改失败
-    PasswordInvalid = 1009, // 密码不合法
+    SqlFailed = 1005, //  数据库操作失败
+    UserExist = 1006, // 用户已存在
+    EmailUsed = 1007, // 邮箱以被使用
+    PasswordErr = 1008, // 密码错误
+    EmailNotMatch = 1009, //  邮箱不匹配
+    PasswordUpFailed = 1010, // 密码修改失败
+    PasswordInvalid = 1011, // 密码不合法
 };
 
 // Defer类

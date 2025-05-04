@@ -2,6 +2,7 @@
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
 #include "RedisManager.h"
+#include "MysqlManager.h"
 
 LogicSystem::LogicSystem() {
     // 服务测试
@@ -90,8 +91,25 @@ LogicSystem::LogicSystem() {
             return true;
         }
         // 3. 用户是否存在 查找数据库判断用户是否存在 todo
+        static MysqlManager& mysql = MysqlManager::GetInstance();
+        int uid = mysql.RegUser(srcRoot["user"].asString(), srcRoot["email"].asString(),
+                                srcRoot["password"].asString());
+        if (uid == -1 || uid == -2 || uid == -3) {
+            // 注册用户错误
+            std::cerr << "LogicSystem::LogicSystem Url:/user_register user or email exist" << std::endl;
+            if (uid == -3)
+                root["error"] = ErrorCodes::EmailUsed;  // 邮箱已存在
+            else if (uid == -2)
+                root["error"] = ErrorCodes::UserExist;  // 用户已存在
+            else
+                root["error"] = ErrorCodes::SqlFailed;  // 数据库错误
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
 
         root["error"] = ErrorCodes::Success;
+        root["uid"] = uid;
         root["email"] = srcRoot["email"];
         root["user"] = srcRoot["user"].asString();
         root["password"] = srcRoot["password"].asString();
