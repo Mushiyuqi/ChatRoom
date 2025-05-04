@@ -28,7 +28,11 @@ add_executable(GateServer main.cpp
         RedisManager.cpp
         RedisManager.h
         RedisConnPool.cpp
-        RedisConnPool.h)
+        RedisConnPool.h
+        MySqlPool.cpp
+        MySqlPool.h
+        MysqlDao.cpp
+        MysqlDao.h)
 
 # 将config.ini打包到构建目录方便调试
 configure_file(

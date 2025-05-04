@@ -24,6 +24,7 @@ extern "C" {
 
 #define RedisPoolSize 5
 #define GRPCPoolSize 6
+#define CodePrefix "code_"
 
 namespace beast = boost::beast; // from <boost/beast.hpp>
 namespace http = beast::http; // from <boost/beast/http.hpp>
@@ -50,4 +51,18 @@ enum ErrorCodes {
     PasswordInvalid = 1009, // 密码不合法
 };
 
-#define CodePrefix "code_"
+// Defer类
+class Defer {
+public:
+    // 接受一个lambda表达式或者函数指针
+    explicit Defer(std::function<void()> func) : m_func(func) {}
+
+    // 析构函数中执行传入的函数
+    ~Defer() {
+        m_func();
+    }
+
+private:
+    std::function<void()> m_func;
+};
+
