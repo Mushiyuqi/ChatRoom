@@ -99,8 +99,10 @@ void RegisterDialog::InitHttpHandlers() {
             ShowTip(tr("参数错误"),false);
             return;
         }
+        auto uid = jsonObj["uid"].toInt();
         auto email = jsonObj["email"].toString();
         ShowTip(tr("用户注册成功"), true);
+        qDebug()<< "RegisterDialog::InitHttpHandlers ID_REG_USER uid is " << uid ;
         qDebug()<< "RegisterDialog::InitHttpHandlers ID_REG_USER email is " << email ;
     };
 }
