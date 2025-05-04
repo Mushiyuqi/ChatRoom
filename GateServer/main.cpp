@@ -1,13 +1,8 @@
 #include <iostream>
 #include "CServer.h"
 #include "ConfigManager.h"
-#include "VerifyGrpcClient.h"
-#include "MysqlManager.h"
 
 int main() {
-    // 初始化获取验证码服务客户端
-    VerifyGrpcClient::GetInstance();
-    MysqlManager::GetInstance();
     // 读取配置文件
     const std::string gatePortStr = ConfigManager::GetInstance()["GateServer"]["Port"];
     try {
