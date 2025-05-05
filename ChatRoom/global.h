@@ -14,6 +14,8 @@
 #include <QFile>
 #include <QDir>
 #include <QSettings>
+#include <cryptopp/sha.h>
+#include <cryptopp/hex.h>
 
 /**
  * @brief repolish 刷新qss
@@ -36,3 +38,5 @@ enum ErrorCodes{
 };
 
 extern QString gate_url_prefix;
+// 加密函数
+extern std::function<QString(QString)> Sha256Hash;

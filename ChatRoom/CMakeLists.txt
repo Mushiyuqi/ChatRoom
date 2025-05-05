@@ -28,6 +28,8 @@ target_link_libraries(ChatRoom PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Network
+    # 添加crypto++库的依赖
+    /usr/lib/libcryptopp.so
 )
 
 set_target_properties(ChatRoom PROPERTIES
