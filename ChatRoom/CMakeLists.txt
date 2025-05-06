@@ -6,9 +6,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
 
+# 启用MOC/RCC/UIC自动处理
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+# 包含构建目录（解决ui_*.h路径问题）
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 qt_standard_project_setup()
 
 qt_add_executable(ChatRoom
+    timerbutton.h timerbutton.cpp
     mainwindow.h mainwindow.cpp
     mainwindow.ui
     main.cpp

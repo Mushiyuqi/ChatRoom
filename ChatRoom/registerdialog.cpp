@@ -39,6 +39,8 @@ void RegisterDialog::on_get_code_clicked() {
                                                Modules::REGISTER_MOD);
     }
     else {
+        // 重置定时按钮
+        ui->get_code->UpDataTimer();
         ShowTip(tr("邮箱地址不正确"), match);
     }
 }
@@ -46,6 +48,8 @@ void RegisterDialog::on_get_code_clicked() {
 void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err) {
     if (err != ErrorCodes::SUCCESS) {
         ShowTip("网络请求错误", false);
+        // 重置定时按钮
+        ui->get_code->UpDataTimer();
         return;
     }
 
@@ -53,11 +57,15 @@ void RegisterDialog::slot_reg_mod_finish(ReqId id, QString res, ErrorCodes err) 
     QJsonDocument json_doc = QJsonDocument::fromJson(res.toUtf8());
     if (json_doc.isNull()) {
         ShowTip(tr("json解析失败"), false);
+        // 重置定时按钮
+        ui->get_code->UpDataTimer();
         return;
     }
     // Json 解析错误
     if (!json_doc.isObject()) {
         ShowTip(tr("json解析失败"), false);
+        // 重置定时按钮
+        ui->get_code->UpDataTimer();
         return;
     }
 

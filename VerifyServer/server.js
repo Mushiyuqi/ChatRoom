@@ -25,7 +25,7 @@ async function GetVerifyCode(call, callback) {
             uniqueId = captcha.text
             console.log('uniqueId is ', uniqueId)
             // 将验证码保存到redis中 三分钟过期
-            let bres = await redisModule.SetRedisExpire(constModule.code_prefix + call.request.email, uniqueId, 360)
+            let bres = await redisModule.SetRedisExpire(constModule.code_prefix + call.request.email, uniqueId, 180)
             if (!bres) {
                 // redis 操作失败 编辑回包
                 callback(null, {

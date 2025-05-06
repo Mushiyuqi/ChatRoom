@@ -29,6 +29,13 @@ private:
     // 验证密码的正则表达式
     bool ValidatePassword(const QString &password, QString &errorMsg);
 
+    // 检测输入
+    bool CheckUserValid();
+    bool CheckEmailValid();
+    bool CheckPasswordValid();
+    bool CheckConfirmValid();
+    bool CheckVerifyCodeValid();
+
     Ui::RegisterDialog *ui;
     // 存储各id对应的处理函数
     QMap<ReqId, std::function<void(const QJsonObject&)>> m_handlers;
