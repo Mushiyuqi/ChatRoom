@@ -15,7 +15,11 @@ RegisterDialog::RegisterDialog(QWidget* parent)
 
     // 连接信号与槽
     connect(&HttpManager::GetInstance(), &HttpManager::sig_reg_mod_finish, this, &RegisterDialog::slot_reg_mod_finish);
-
+    connect(ui->user_edit, &QLineEdit::editingFinished, this, [this](){CheckUserValid();});
+    connect(ui->email_edit, &QLineEdit::editingFinished, this, [this](){CheckEmailValid();});
+    connect(ui->pass_edit, &QLineEdit::editingFinished, this, [this](){CheckPasswordValid();});
+    connect(ui->confirm_edit, &QLineEdit::editingFinished, this, [this](){CheckConfirmValid();});
+    connect(ui->verify_edit, &QLineEdit::editingFinished, this, [this](){CheckVerifyCodeValid();});
     // 注册Register模块回调函数
     InitHttpHandlers();
 }
@@ -115,68 +119,128 @@ void RegisterDialog::InitHttpHandlers() {
     };
 }
 
-bool RegisterDialog::ValidatePassword(const QString &password, QString &errorMsg)
+bool RegisterDialog::CheckUserValid()
 {
-    // 基础长度检查
-    if (password.length() < 8) {
-        errorMsg = "密码长度不足8位";
+    if(ui->user_edit->text().isEmpty()){
+        AddTipErr(TipErr::TIP_USER_ERR, tr("用户名不能为空"));
         return false;
     }
+    DelTipErr(TipErr::TIP_USER_ERR);
+    return true;
+}
 
-    // 各字符类型检查
+bool RegisterDialog::CheckEmailValid()
+{
+    auto email = ui->email_edit->text();
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+    bool match = regex.match(email).hasMatch();
+    if(!match){
+        AddTipErr(TipErr::TIP_EMAIL_ERR, tr("邮箱地址不正确"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_EMAIL_ERR);
+    return true;
+}
+
+bool RegisterDialog::CheckPasswordValid()
+{
+    auto password = ui->pass_edit->text();
+    auto confirm = ui->confirm_edit->text();
+
     QRegularExpression letterReg("[A-Za-z]");
     QRegularExpression digitReg("\\d");
     QRegularExpression symbolReg("[!@#$%^&*()_+{}|:\"<>?~\\-\\[\\]\\\\';.,/=]");
 
+    // 基础长度检查
+    if (password.length() < 8) {
+        AddTipErr(TipErr::TIP_PWD_ERR, tr("密码长度不足8位"));
+        return false;
+    }
+    if (password.length() > 32) {
+        AddTipErr(TipErr::TIP_PWD_ERR, tr("密码长度过长"));
+        return false;
+    }
+    // 各字符类型检查
     if (!password.contains(letterReg)) {
-        errorMsg = "密码必须包含至少一个字母";
+        AddTipErr(TipErr::TIP_PWD_ERR, tr("密码必须包含至少一个字母"));
         return false;
     }
     if (!password.contains(digitReg)) {
-        errorMsg = "密码必须包含至少一个数字";
+        AddTipErr(TipErr::TIP_PWD_ERR, tr("密码必须包含至少一个数字"));
         return false;
     }
     if (!password.contains(symbolReg)) {
-        errorMsg = "密码必须包含至少一个特殊符号";
+        AddTipErr(TipErr::TIP_PWD_ERR, tr("密码必须包含至少一个特殊符号"));
         return false;
     }
+    DelTipErr(TipErr::TIP_PWD_ERR);
 
+    // 判断与验证密码是否相同
+    if (password != confirm){
+        AddTipErr(TipErr::TIP_PWD_CONFIRM, tr("密码与确认密码不匹配"));
+        return false;
+    }else{
+        DelTipErr(TipErr::TIP_PWD_CONFIRM);
+    }
     return true;
+}
+
+bool RegisterDialog::CheckConfirmValid()
+{
+    auto confirm = ui->confirm_edit->text();
+    auto password = ui->pass_edit->text();
+    if(confirm != password){
+        AddTipErr(TipErr::TIP_PWD_CONFIRM, tr("密码与确认密码不匹配"));
+        return false;
+    }else{
+        DelTipErr(TipErr::TIP_PWD_CONFIRM);
+    }
+    return true;
+}
+
+bool RegisterDialog::CheckVerifyCodeValid()
+{
+    auto code = ui->verify_edit->text();
+    if(code.isEmpty()){
+        AddTipErr(TipErr::TIP_VERIFY_ERR, tr("验证码不能为空"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_VERIFY_ERR);
+    return true;
+}
+
+void RegisterDialog::AddTipErr(TipErr err, QString tip)
+{
+    // 添加错误
+    m_tip_errs[err] = tip;
+    // 显示信息
+    ShowTip(tip, false);
+}
+
+void RegisterDialog::DelTipErr(TipErr err)
+{
+    // 移除错误
+    m_tip_errs.remove(err);
+    if(m_tip_errs.empty()){
+        ui->err_tip->clear();
+        return;
+    }
+    // 显示第一个错误
+    ShowTip(m_tip_errs.first(), false);
 }
 
 void RegisterDialog::on_confirm_btn_clicked()
 {
     // 验证用户名
-    if(ui->user_edit->text() == ""){
-        ShowTip(tr("用户名不能为空"), false);
-        return;
-    }
+    if(!CheckUserValid()) return;
     // 验证邮箱
-    if(ui->email_edit->text() == ""){
-        ShowTip(tr("邮箱不能为空"), false);
-        return;
-    }
+    if(!CheckEmailValid()) return;
     // 验证密码
-    QString errorMsg;
-    if(!ValidatePassword(ui->pass_edit->text(), errorMsg)){
-        ShowTip(errorMsg, false);
-        return;
-    }
+    if(!CheckPasswordValid()) return;
     // 验证确认密码
-    if(ui->confirm_edit->text() == ""){
-        ShowTip(tr("确认密码不能为空"), false);
-        return;
-    }
-    // 验证密码与确认密码匹配
-    if(ui->confirm_edit->text() != ui->pass_edit->text()){
-        ShowTip(tr("密码和确认密码不匹配"), false);
-        return;
-    }
+    if(!CheckConfirmValid()) return;
     // 验证验证码
-    if(ui->varify_edit->text() == ""){
-        ShowTip(tr("验证码不能为空"), false);
-        return;
-    }
+    if(!CheckVerifyCodeValid()) return;
     // 发送http请求注册用户
     QJsonObject jsonObj;
     jsonObj["user"] = ui->user_edit->text();
@@ -184,7 +248,7 @@ void RegisterDialog::on_confirm_btn_clicked()
     // 密码加密发送
     jsonObj["password"] = Sha256Hash(ui->pass_edit->text());
     jsonObj["confirm"] = Sha256Hash(ui->confirm_edit->text());
-    jsonObj["verifycode"] = ui->varify_edit->text();
+    jsonObj["verifycode"] = ui->verify_edit->text();
     HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix + "/user_register"),
                                            jsonObj,
                                            ReqId::ID_REG_USER, Modules::REGISTER_MOD);

@@ -16,6 +16,7 @@
 #include <QSettings>
 #include <cryptopp/sha.h>
 #include <cryptopp/hex.h>
+#include <unordered_map>
 
 /**
  * @brief repolish 刷新qss
