@@ -27,6 +27,7 @@ qt_add_executable(ChatRoom
     global.cpp
     httpmanager.h httpmanager.cpp
     config.ini
+    clickedlabel.h clickedlabel.cpp
 )
 
 

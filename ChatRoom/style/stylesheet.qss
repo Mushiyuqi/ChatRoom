@@ -19,3 +19,35 @@ background: qlineargradient(
 #err_tip[state='err']{
     color: #EE2C2C
 }
+
+#pass_visible[state='unvisible']{
+   border-image: url(:/resource/unvisible.png);
+}
+
+#pass_visible[state='unvisible_hover']{
+   border-image: url(:/resource/unvisible_hover.png);
+}
+
+#pass_visible[state='visible']{
+   border-image: url(:/resource/visible.png);
+}
+
+#pass_visible[state='visible_hover']{
+   border-image: url(:/resource/visible_hover.png);
+}
+
+#confirm_visible[state='unvisible']{
+   border-image: url(:/resource/unvisible.png);
+}
+
+#confirm_visible[state='unvisible_hover']{
+   border-image: url(:/resource/unvisible_hover.png);
+}
+
+#confirm_visible[state='visible']{
+   border-image: url(:/resource/visible.png);
+}
+
+#confirm_visible[state='visible_hover']{
+   border-image: url(:/resource/visible_hover.png);
+}

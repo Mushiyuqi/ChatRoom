@@ -3,5 +3,9 @@
         <file>resource/chat.png</file>
         <file>resource/ice.jpg</file>
         <file>style/stylesheet.qss</file>
+        <file>resource/unvisible_hover.png</file>
+        <file>resource/unvisible.png</file>
+        <file>resource/visible_hover.png</file>
+        <file>resource/visible.png</file>
     </qresource>
 </RCC>
