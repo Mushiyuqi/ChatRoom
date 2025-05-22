@@ -6,7 +6,7 @@
 #include "registerdialog.h"
 
 RegisterDialog::RegisterDialog(QWidget* parent)
-    : QDialog(parent), ui(new Ui::RegisterDialog) {
+    : QDialog(parent), ui(new Ui::RegisterDialog), m_countdown(5) {
     ui->setupUi(this);
     ui->pass_edit->setEchoMode(QLineEdit::Password);
     ui->confirm_edit->setEchoMode(QLineEdit::Password);
@@ -45,6 +45,21 @@ RegisterDialog::RegisterDialog(QWidget* parent)
             ui->confirm_edit->setEchoMode(QLineEdit::Normal);
         }
     });
+
+    // 创建定时器
+    m_countdown_timer = new QTimer(this);
+    // 连接信号和槽
+    connect(m_countdown_timer, &QTimer::timeout, [this](){
+        if(m_countdown==0){
+            m_countdown_timer->stop();
+            emit sigSwitchLogin();
+            return;
+        }
+        m_countdown--;
+        auto str = QString("注册成功，%1 s后返回登录界面").arg(m_countdown);
+        ui->tip_label->setText(str);
+    });
+
 }
 
 RegisterDialog::~RegisterDialog() {
@@ -137,6 +152,10 @@ void RegisterDialog::InitHttpHandlers() {
         auto uid = jsonObj["uid"].toInt();
         auto email = jsonObj["email"].toString();
         ShowTip(tr("用户注册成功"), true);
+
+        // 切换到提示页面
+        ChangeTipPage();
+
         qDebug()<< "RegisterDialog::InitHttpHandlers ID_REG_USER uid is " << uid ;
         qDebug()<< "RegisterDialog::InitHttpHandlers ID_REG_USER email is " << email ;
     };
@@ -252,6 +271,15 @@ void RegisterDialog::DelTipErr(TipErr err)
     ShowTip(m_tip_errs.first(), false);
 }
 
+void RegisterDialog::ChangeTipPage()
+{
+    m_countdown_timer->stop();
+    ui->stackedWidget->setCurrentWidget(ui->page_2);
+
+    // 启动定时器，设置时间间隔为1秒
+    m_countdown_timer->start(1000);
+}
+
 void RegisterDialog::on_confirm_btn_clicked()
 {
     // 验证用户名
@@ -277,3 +305,18 @@ void RegisterDialog::on_confirm_btn_clicked()
                                            ReqId::ID_REG_USER, Modules::REGISTER_MOD);
 }
 
+
+void RegisterDialog::on_return_btn_clicked()
+{
+    // 停止定时器
+    m_countdown_timer->stop();
+    // 发送切换页面信号
+    emit sigSwitchLogin();
+}
+
+void RegisterDialog::on_cancel_btn_clicked()
+{
+    // 切换到登陆页面
+    m_countdown_timer->stop();
+    emit sigSwitchLogin();
+}

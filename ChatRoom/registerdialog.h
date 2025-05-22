@@ -32,6 +32,10 @@ private slots:
     // 注册用户
     void on_confirm_btn_clicked();
 
+    void on_return_btn_clicked();
+
+    void on_cancel_btn_clicked();
+
 private:
     void ShowTip(QString str, bool b_ok);
     // 注册Register模块回调函数
@@ -47,9 +51,17 @@ private:
     void AddTipErr(TipErr err, QString msg);
     void DelTipErr(TipErr err);
 
+    void ChangeTipPage();
+
     QMap<TipErr, QString> m_tip_errs;
 
     Ui::RegisterDialog *ui;
     // 存储各id对应的处理函数
     QMap<ReqId, std::function<void(const QJsonObject&)>> m_handlers;
+
+    QTimer* m_countdown_timer;
+    int m_countdown;
+
+signals:
+    void sigSwitchLogin();
 };
