@@ -19,6 +19,7 @@ public:
 public slots:
     void SlotSwitchReg();
     void SlotSwitchLogin();
+    void SlotSwitchReset();
 
 private:
     Ui::MainWindow *ui;

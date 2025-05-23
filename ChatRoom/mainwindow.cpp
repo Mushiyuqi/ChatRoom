@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(m_login_dlg);
     // 创建和注册消息连接
     connect(m_login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
+    connect(m_login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
 }
 
 MainWindow::~MainWindow()
@@ -44,5 +45,11 @@ void MainWindow::SlotSwitchLogin()
 
     // 创建和注册消息连接
     connect(m_login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
+    connect(m_login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+}
+
+void MainWindow::SlotSwitchReset()
+{
+
 }
 
