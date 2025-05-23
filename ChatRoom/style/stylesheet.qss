@@ -1,4 +1,4 @@
-QDialog#LoginDialog, #RegisterDialog{
+QDialog#LoginDialog, #RegisterDialog, #ResetDialog{
 background: qlineargradient(
     x1: 0, y1: 1,     /* 起点坐标（0~1） */
     x2: 1, y2: 0,     /* 终点坐标（0~1） */
