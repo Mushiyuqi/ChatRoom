@@ -152,7 +152,7 @@ void ResetDialog::InitHandlers()
         qDebug()<< "email is " << email ;
     });
 
-    //注册注册用户回包逻辑
+    //注册重置密码回包逻辑
     m_handlers.insert(ReqId::ID_RESET_PWD, [this](QJsonObject jsonObj){
         int error = jsonObj["error"].toInt();
         if(error != ErrorCodes::SUCCESS){
@@ -215,9 +215,9 @@ void ResetDialog::on_sure_btn_clicked()
     QJsonObject json_obj;
     json_obj["user"] = ui->user_edit->text();
     json_obj["email"] = ui->email_edit->text();
-    json_obj["passwd"] = Sha256Hash(ui->pwd_edit->text());
-    json_obj["varifycode"] = ui->verify_edit->text();
-    HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix+"/reset_pwd"),
+    json_obj["password"] = Sha256Hash(ui->pwd_edit->text());
+    json_obj["verifycode"] = ui->verify_edit->text();
+    HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix + "/reset_pwd"),
                                         json_obj, ReqId::ID_RESET_PWD,Modules::RESET_MOD);
 }
 

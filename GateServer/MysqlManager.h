@@ -10,6 +10,8 @@ public:
     static MysqlManager& GetInstance();
     // 注册用户
     int RegUser(const std::string& name, const std::string& email, const std::string& pwd);
+    bool CheckEmail(const std::string& name, const std::string& email);
+    bool UpdatePwd(const std::string& name, const std::string& password);
 
 private:
     MysqlManager() = default;

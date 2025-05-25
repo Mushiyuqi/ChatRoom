@@ -90,7 +90,7 @@ LogicSystem::LogicSystem() {
             beast::ostream(connection->m_response.body()) << jsonstr;
             return true;
         }
-        // 3. 用户是否存在 查找数据库判断用户是否存在 todo
+        // 3. 用户是否存在 查找数据库判断用户是否存在
         static MysqlManager& mysql = MysqlManager::GetInstance();
         int uid = mysql.RegUser(srcRoot["user"].asString(), srcRoot["email"].asString(),
                                 srcRoot["password"].asString());
@@ -98,11 +98,11 @@ LogicSystem::LogicSystem() {
             // 注册用户错误
             std::cerr << "LogicSystem::LogicSystem Url:/user_register user or email exist" << std::endl;
             if (uid == -3)
-                root["error"] = ErrorCodes::EmailUsed;  // 邮箱已存在
+                root["error"] = ErrorCodes::EmailUsed; // 邮箱已存在
             else if (uid == -2)
-                root["error"] = ErrorCodes::UserExist;  // 用户已存在
+                root["error"] = ErrorCodes::UserExist; // 用户已存在
             else
-                root["error"] = ErrorCodes::SqlFailed;  // 数据库错误
+                root["error"] = ErrorCodes::SqlFailed; // 数据库错误
             std::string jsonstr = root.toStyledString();
             beast::ostream(connection->m_response.body()) << jsonstr;
             return true;
@@ -114,6 +114,77 @@ LogicSystem::LogicSystem() {
         root["user"] = srcRoot["user"].asString();
         root["password"] = srcRoot["password"].asString();
         root["confirm"] = srcRoot["confirm"].asString();
+        root["verifycode"] = srcRoot["verifycode"].asString();
+        std::string jsonstr = root.toStyledString();
+        beast::ostream(connection->m_response.body()) << jsonstr;
+        return true;
+    });
+    // 重置密码服务
+    RegisterPost("/reset_pwd", [](std::shared_ptr<HttpConnection> connection) {
+        // 将body的数据转换成string
+        auto bodyStr = boost::beast::buffers_to_string(connection->m_request.body().data());
+        // 设置回包格式
+        connection->m_response.set(http::field::content_type, "text/json");
+        // 解析json数据
+        Json::Value root;
+        Json::Reader reader;
+        Json::Value srcRoot;
+        bool parseSuccess = reader.parse(bodyStr, srcRoot);
+        if (!parseSuccess) {
+            // 解析失败编辑回包
+            std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd Failed to parse JSON data!" << std::endl;
+            root["error"] = ErrorCodes::ErrorJson;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+
+        // 1. 验证码是否过期
+        std::string verifyCode;
+        bool b_get_verify = RedisManager::GetInstance().Get(CodePrefix + srcRoot["email"].asString(), verifyCode);
+        if (!b_get_verify) {
+            // 验证码获取过期
+            std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd get verify code expired" << std::endl;
+            root["error"] = ErrorCodes::VerifyExpired;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+        // 2. 验证码是否错误
+        if (verifyCode != srcRoot["verifycode"].asString()) {
+            // 验证码错误
+            std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd verify code error" << std::endl;
+            root["error"] = ErrorCodes::VerifyCodeErr;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+        // 3. 判断用户名和邮箱是否匹配
+        bool flag = MysqlManager::GetInstance().
+            CheckEmail(srcRoot["user"].asString(), srcRoot["email"].asString());
+        if(!flag) {
+            std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd user or email error" << std::endl;
+            root["error"] = ErrorCodes::EmailNotMatch;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+
+        // 4. 修改密码
+        flag = MysqlManager::GetInstance().
+            UpdatePwd(srcRoot["user"].asString(), srcRoot["password"].asString());
+        if(!flag) {
+            std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd update password failed" << std::endl;
+            root["error"] = ErrorCodes::PasswordUpFailed;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+
+        root["error"] = ErrorCodes::Success;
+        root["email"] = srcRoot["email"];
+        root["user"] = srcRoot["user"].asString();
+        root["password"] = srcRoot["password"].asString();
         root["verifycode"] = srcRoot["verifycode"].asString();
         std::string jsonstr = root.toStyledString();
         beast::ostream(connection->m_response.body()) << jsonstr;

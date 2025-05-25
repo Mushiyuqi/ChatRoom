@@ -70,7 +70,7 @@ bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
 
 		// 遍历结果集
 		while (res->next()) {
-			std::cout << "Check Email: " << res->getString("email") << std::endl;
+			std::cout << "MysqlDao::CheckEmail : " << res->getString("email") << std::endl;
 			if (email != res->getString("email")) {
 				m_pool->returnConnection(std::move(con));
 				return false;
@@ -82,6 +82,7 @@ bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
 	}
 	catch (sql::SQLException& e) {
 		m_pool->returnConnection(std::move(con));
+		std::cerr << "MysqlDao::CheckEmail ";
 		std::cerr << "SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
@@ -107,12 +108,13 @@ bool MysqlDao::UpdatePwd(const std::string& name, const std::string& newpwd) {
 		// 执行更新
 		int updateCount = pstmt->executeUpdate();
 
-		std::cout << "Updated rows: " << updateCount << std::endl;
+		std::cout << "MysqlDao::UpdatePwd Updated rows: " << updateCount << std::endl;
 		m_pool->returnConnection(std::move(con));
 		return true;
 	}
 	catch (sql::SQLException& e) {
 		m_pool->returnConnection(std::move(con));
+		std::cerr << "MysqlDao::UpdatePwd ";
 		std::cerr << "SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
