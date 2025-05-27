@@ -72,7 +72,7 @@
         </size>
        </property>
        <property name="text">
-        <string>用户名</string>
+        <string>用户名:</string>
        </property>
       </widget>
      </item>
@@ -117,7 +117,7 @@
         </size>
        </property>
        <property name="text">
-        <string>邮箱</string>
+        <string>邮   箱:</string>
        </property>
       </widget>
      </item>
@@ -162,7 +162,7 @@
         </size>
        </property>
        <property name="text">
-        <string>验证码</string>
+        <string>验证码:</string>
        </property>
       </widget>
      </item>
@@ -220,7 +220,7 @@
         </size>
        </property>
        <property name="text">
-        <string>新密码</string>
+        <string>新密码:</string>
        </property>
       </widget>
      </item>
