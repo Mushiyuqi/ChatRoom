@@ -343,14 +343,14 @@
             <widget class="QPushButton" name="confirm_btn">
              <property name="minimumSize">
               <size>
-               <width>0</width>
-               <height>25</height>
+               <width>100</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>16777215</width>
-               <height>25</height>
+               <width>100</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -375,14 +375,14 @@
             <widget class="QPushButton" name="cancel_btn">
              <property name="minimumSize">
               <size>
-               <width>0</width>
-               <height>25</height>
+               <width>100</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>16777215</width>
-               <height>25</height>
+               <width>100</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -517,14 +517,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TimerButton</class>
-   <extends>QPushButton</extends>
-   <header>timerbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>ClickedLabel</class>
    <extends>QLabel</extends>
    <header>clickedlabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TimerButton</class>
+   <extends>QPushButton</extends>
+   <header>timerbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

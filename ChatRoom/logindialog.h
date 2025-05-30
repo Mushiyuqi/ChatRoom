@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <global.h>
 
 namespace Ui {
 class LoginDialog;
@@ -15,6 +16,8 @@ public:
     ~LoginDialog();
 
 private:
+    void InitHead();
+
     Ui::LoginDialog *ui;
 
 signals:

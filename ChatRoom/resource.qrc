@@ -36,5 +36,6 @@
         <file>resource/smile_press.png</file>
         <file>resource/smile.png</file>
         <file>resource/tipclose.png</file>
+        <file>resource/head_0.png</file>
     </qresource>
 </RCC>
