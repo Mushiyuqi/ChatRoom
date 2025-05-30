@@ -7,5 +7,34 @@
         <file>resource/unvisible.png</file>
         <file>resource/visible_hover.png</file>
         <file>resource/visible.png</file>
+        <file>resource/add_friend_hover.png</file>
+        <file>resource/add_friend_normal.png</file>
+        <file>resource/addtip.png</file>
+        <file>resource/arowdown.png</file>
+        <file>resource/chat_icon_hover.png</file>
+        <file>resource/chat_icon_press.png</file>
+        <file>resource/chat_icon_select_hover.png</file>
+        <file>resource/chat_icon_select_press.png</file>
+        <file>resource/chat_icon.png</file>
+        <file>resource/close_search.png</file>
+        <file>resource/close_transparent.png</file>
+        <file>resource/contact_list_hover.png</file>
+        <file>resource/contact_list_press.png</file>
+        <file>resource/contact_list.png</file>
+        <file>resource/filedir_hover.png</file>
+        <file>resource/filedir_press.png</file>
+        <file>resource/filedir.png</file>
+        <file>resource/head_1.jpg</file>
+        <file>resource/head_2.jpg</file>
+        <file>resource/head_3.jpg</file>
+        <file>resource/head_4.jpg</file>
+        <file>resource/head_5.jpg</file>
+        <file>resource/loading.gif</file>
+        <file>resource/right_tip.png</file>
+        <file>resource/search.png</file>
+        <file>resource/smile_hover.png</file>
+        <file>resource/smile_press.png</file>
+        <file>resource/smile.png</file>
+        <file>resource/tipclose.png</file>
     </qresource>
 </RCC>
