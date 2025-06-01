@@ -209,15 +209,39 @@ LogicSystem::LogicSystem() {
             beast::ostream(connection->m_response.body()) << jsonstr;
             return true;
         }
+        auto email = srcRoot["email"].asString();
+        auto pwd = srcRoot["password"].asString();
+        UserInfo userInfo;
+        //查询数据库判断用户名和密码是否匹配
+        bool pwd_valid = MysqlManager::GetInstance().CheckPassword(email, pwd, userInfo);
+        if (!pwd_valid) {
+            std::cerr << "LogicSystem::LogicSystem Url:/user_login user pwd not match" << std::endl;
+            root["error"] = ErrorCodes::PasswordInvalid;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
 
-        root["error"] = ErrorCodes::Success;
-        root["email"] = srcRoot["email"];
-        root["uid"] = 123;
-        root["host"] = "127.0.0.1";
-        root["port"] = "8080";
-        root["token"] = "this is token";
-        std::string jsonstr = root.toStyledString();
-        beast::ostream(connection->m_response.body()) << jsonstr;
+        //查询StatusServer找到合适的连接
+        // auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userInfo.uid);
+        // if (reply.error()) {
+        //     std::cerr << "LogicSystem::LogicSystem Url:/user_login grpc get chat server failed, error is "
+        //         << reply.error() << std::endl;
+        //     root["error"] = ErrorCodes::RPCFailed;
+        //     std::string jsonstr = root.toStyledString();
+        //     beast::ostream(connection->m_response.body()) << jsonstr;
+        //     return true;
+        // }
+        //
+        // std::cout << "succeed to load userinfo uid is " << userInfo.uid << std::endl;
+        // root["error"] = 0;
+        // root["email"] = email;
+        // root["uid"] = userInfo.uid;
+        // root["token"] = reply.token();
+        // root["host"] = reply.host();
+        // root["port"] = reply.port();
+        // std::string jsonstr = root.toStyledString();
+        // beast::ostream(connection->m_response.body()) << jsonstr;
         return true;
     });
 }
