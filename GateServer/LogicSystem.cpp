@@ -162,7 +162,7 @@ LogicSystem::LogicSystem() {
         // 3. 判断用户名和邮箱是否匹配
         bool flag = MysqlManager::GetInstance().
             CheckEmail(srcRoot["user"].asString(), srcRoot["email"].asString());
-        if(!flag) {
+        if (!flag) {
             std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd user or email error" << std::endl;
             root["error"] = ErrorCodes::EmailNotMatch;
             std::string jsonstr = root.toStyledString();
@@ -173,7 +173,7 @@ LogicSystem::LogicSystem() {
         // 4. 修改密码
         flag = MysqlManager::GetInstance().
             UpdatePwd(srcRoot["user"].asString(), srcRoot["password"].asString());
-        if(!flag) {
+        if (!flag) {
             std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd update password failed" << std::endl;
             root["error"] = ErrorCodes::PasswordUpFailed;
             std::string jsonstr = root.toStyledString();
@@ -186,6 +186,36 @@ LogicSystem::LogicSystem() {
         root["user"] = srcRoot["user"].asString();
         root["password"] = srcRoot["password"].asString();
         root["verifycode"] = srcRoot["verifycode"].asString();
+        std::string jsonstr = root.toStyledString();
+        beast::ostream(connection->m_response.body()) << jsonstr;
+        return true;
+    });
+    // 登陆服务
+    RegisterPost("/user_login", [](std::shared_ptr<HttpConnection> connection) {
+        // 将body的数据转换成string
+        auto bodyStr = boost::beast::buffers_to_string(connection->m_request.body().data());
+        // 设置回包格式
+        connection->m_response.set(http::field::content_type, "text/json");
+        // 解析json数据
+        Json::Value root;
+        Json::Reader reader;
+        Json::Value srcRoot;
+        bool parseSuccess = reader.parse(bodyStr, srcRoot);
+        if (!parseSuccess) {
+            // 解析失败编辑回包
+            std::cerr << "LogicSystem::LogicSystem Url:/user_login Failed to parse JSON data!" << std::endl;
+            root["error"] = ErrorCodes::ErrorJson;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+
+        root["error"] = ErrorCodes::Success;
+        root["email"] = srcRoot["email"];
+        root["uid"] = 123;
+        root["host"] = "127.0.0.1";
+        root["port"] = "8080";
+        root["token"] = "this is token";
         std::string jsonstr = root.toStyledString();
         beast::ostream(connection->m_response.body()) << jsonstr;
         return true;

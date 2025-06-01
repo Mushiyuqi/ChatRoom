@@ -49,3 +49,10 @@ enum ErrorCodes{
     ERR_NETWORK = 2, // 网络错误
 };
 
+struct ServerInfo{
+    QString Host;
+    QString Port;
+    QString Token;
+    int Uid;
+};
+

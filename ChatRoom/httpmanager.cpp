@@ -60,4 +60,8 @@ void HttpManager::slot_http_finish(ReqId id, QString res, ErrorCodes err, Module
         // 通知注册模块
         emit sig_reset_mod_finish(id, res, err);
     }
+    if(mod == Modules::LOGINMOD){
+        // 通知登陆模块
+        emit sig_login_mod_finish(id, res, err);
+    }
 }
