@@ -193,7 +193,6 @@ void LoginDialog::on_login_btn_clicked()
     QJsonObject jsonObj;
     jsonObj["email"] = email;
     jsonObj["password"] = Sha256Hash(pwd);
-    qDebug() << Sha256Hash(pwd);
     HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix+"/user_login"), jsonObj, ReqId::ID_LOGIN_USER, Modules::LOGINMOD);
 }
 
