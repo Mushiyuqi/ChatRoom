@@ -60,13 +60,16 @@ enum ErrorCodes {
     EmailNotMatch = 1009, //  邮箱不匹配
     PasswordUpFailed = 1010, // 密码修改失败
     PasswordInvalid = 1011, // 密码不合法
+    TokenInvalid = 1012, // Token无效
+    UidInvalid = 1013, //uid无效
 };
 
 // Defer类
 class Defer {
 public:
     // 接受一个lambda表达式或者函数指针
-    explicit Defer(std::function<void()> func) : m_func(func) {}
+    explicit Defer(std::function<void()> func) : m_func(func) {
+    }
 
     // 析构函数中执行传入的函数
     ~Defer() {

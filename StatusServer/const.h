@@ -14,6 +14,9 @@
 #include <boost/operators.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <grpcpp/grpcpp.h>
 #include "message.grpc.pb.h"
 #include "message.pb.h"
@@ -32,14 +35,10 @@ namespace http = beast::http; // from <boost/beast/http.hpp>
 namespace net = boost::asio; // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp; // from <boost/asio/ip/tcp.hpp>
 
-using grpc::Channel;
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
 using grpc::Status;
-using grpc::ClientContext;
-
-using message::GetVerifyReq;
-using message::GetVerifyRsp;
-using message::VerifyService;
-
 using message::GetChatServerReq;
 using message::GetChatServerRsp;
 using message::LoginReq;
@@ -59,6 +58,8 @@ enum ErrorCodes {
     EmailNotMatch = 1009, //  邮箱不匹配
     PasswordUpFailed = 1010, // 密码修改失败
     PasswordInvalid = 1011, // 密码不合法
+    TokenInvalid = 1012, // Token无效
+    UidInvalid =  1013, //uid无效
 };
 
 // Defer类
