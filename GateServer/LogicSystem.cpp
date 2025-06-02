@@ -224,25 +224,25 @@ LogicSystem::LogicSystem() {
         }
 
         //查询StatusServer找到合适的连接
-        // auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userInfo.uid);
-        // if (reply.error()) {
-        //     std::cerr << "LogicSystem::LogicSystem Url:/user_login grpc get chat server failed, error is "
-        //         << reply.error() << std::endl;
-        //     root["error"] = ErrorCodes::RPCFailed;
-        //     std::string jsonstr = root.toStyledString();
-        //     beast::ostream(connection->m_response.body()) << jsonstr;
-        //     return true;
-        // }
-        //
-        // std::cout << "succeed to load userinfo uid is " << userInfo.uid << std::endl;
-        // root["error"] = 0;
-        // root["email"] = email;
-        // root["uid"] = userInfo.uid;
-        // root["token"] = reply.token();
-        // root["host"] = reply.host();
-        // root["port"] = reply.port();
-        // std::string jsonstr = root.toStyledString();
-        // beast::ostream(connection->m_response.body()) << jsonstr;
+        auto reply = StatusGrpcClient::GetInstance().GetChatServer(userInfo.uid);
+        if (reply.error()) {
+            std::cerr << "LogicSystem::LogicSystem Url:/user_login grpc get chat server failed, error is "
+                << reply.error() << std::endl;
+            root["error"] = ErrorCodes::RPCFailed;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->m_response.body()) << jsonstr;
+            return true;
+        }
+
+        std::cout << "succeed to load userinfo uid is " << userInfo.uid << std::endl;
+        root["error"] = 0;
+        root["email"] = email;
+        root["uid"] = userInfo.uid;
+        root["token"] = reply.token();
+        root["host"] = reply.host();
+        root["port"] = reply.port();
+        std::string jsonstr = root.toStyledString();
+        beast::ostream(connection->m_response.body()) << jsonstr;
         return true;
     });
 }
