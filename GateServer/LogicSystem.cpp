@@ -1,6 +1,7 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
+#include "StatusGrpcClient.h"
 #include "RedisManager.h"
 #include "MysqlManager.h"
 

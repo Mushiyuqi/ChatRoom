@@ -17,6 +17,7 @@
 #include <grpcpp/grpcpp.h>
 #include "message.grpc.pb.h"
 #include "message.pb.h"
+#include "GRPCConnPool.hpp"
 
 extern "C" {
 #include <hiredis/hiredis.h>
@@ -35,9 +36,16 @@ using tcp = boost::asio::ip::tcp; // from <boost/asio/ip/tcp.hpp>
 using grpc::Channel;
 using grpc::Status;
 using grpc::ClientContext;
+
 using message::GetVerifyReq;
 using message::GetVerifyRsp;
 using message::VerifyService;
+
+using message::GetChatServerReq;
+using message::GetChatServerRsp;
+using message::LoginReq;
+using message::LoginRsp;
+using message::StatusService;
 
 enum ErrorCodes {
     Success = 0,

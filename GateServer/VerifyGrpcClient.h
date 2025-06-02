@@ -1,6 +1,5 @@
 #pragma once
 #include "const.h"
-#include "GRPCConnPool.h"
 
 class VerifyGrpcClient {
 public:
@@ -15,6 +14,6 @@ public:
 private:
     VerifyGrpcClient();
 
-    GRPCConnPool m_connPool;
+    GRPCConnPool<VerifyService::Stub> m_connPool;
 };
 

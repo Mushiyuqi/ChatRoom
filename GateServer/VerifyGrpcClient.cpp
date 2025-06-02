@@ -7,7 +7,10 @@ VerifyGrpcClient::~VerifyGrpcClient() {
 
 VerifyGrpcClient::VerifyGrpcClient()
     : m_connPool(GRPCPoolSize, ConfigManager::GetInstance()["VerifyServer"]["Host"],
-                 ConfigManager::GetInstance()["VerifyServer"]["Port"]) {
+                 ConfigManager::GetInstance()["VerifyServer"]["Port"],
+                 [](auto channel) {
+                     return VerifyService::NewStub(channel);
+                 }) {
     std::cout << "VerifyGrpcClient::VerifyGrpcClient() constructed" << std::endl;
 }
 

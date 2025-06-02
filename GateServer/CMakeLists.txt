@@ -23,8 +23,7 @@ add_executable(GateServer main.cpp
         ConfigManager.h
         IOContextPool.cpp
         IOContextPool.h
-        GRPCConnPool.cpp
-        GRPCConnPool.h
+        GRPCConnPool.hpp
         RedisManager.cpp
         RedisManager.h
         RedisConnPool.cpp
@@ -34,7 +33,9 @@ add_executable(GateServer main.cpp
         MysqlDao.cpp
         MysqlDao.h
         MysqlManager.cpp
-        MysqlManager.h)
+        MysqlManager.h
+        StatusGrpcClient.cpp
+        StatusGrpcClient.h)
 
 # 将config.ini打包到构建目录方便调试
 configure_file(
