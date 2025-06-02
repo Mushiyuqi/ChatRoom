@@ -3,7 +3,38 @@ project(StatusServer)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(StatusServer main.cpp)
+add_executable(StatusServer
+        main.cpp
+        ConfigManager.h
+        ConfigManager.cpp
+        config.ini
+        MysqlManager.cpp
+        MysqlDao.cpp
+        MysqlDao.h
+        const.h
+        MysqlPool.cpp
+        MysqlManager.h
+        MysqlPool.h
+        RedisConnPool.cpp
+        RedisConnPool.h
+        RedisManager.cpp
+        RedisManager.h
+        IOContextPool.cpp
+        IOContextPool.h
+        StatusServiceImpl.cpp
+        StatusServiceImpl.h
+        message.grpc.pb.cc
+        message.grpc.pb.h
+        message.pb.cc
+        message.pb.h
+)
+
+# 将config.ini打包到构建目录方便调试
+configure_file(
+        "${CMAKE_SOURCE_DIR}/config.ini"
+        "${CMAKE_BINARY_DIR}/config.ini"
+        COPYONLY  # 纯拷贝，不替换变量
+)
 
 # 设置find package策略
 cmake_policy(SET CMP0167 NEW)
