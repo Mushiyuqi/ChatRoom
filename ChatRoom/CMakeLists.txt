@@ -29,6 +29,7 @@ qt_add_executable(ChatRoom
     config.ini
     clickedlabel.h clickedlabel.cpp
     resetdialog.h resetdialog.cpp resetdialog.ui
+    tcpmanager.h tcpmanager.cpp
 )
 
 

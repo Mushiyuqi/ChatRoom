@@ -6,11 +6,12 @@
 void RunServer() {
     auto& config = ConfigManager::GetInstance();
 
-    StatusServiceImpl service;
+    // 监听端口
     grpc::ServerBuilder builder;
-    // 监听端口和添加服务
     const std::string serverAddress(config["StatusServer"]["Host"] + ":" + config["StatusServer"]["Port"]);
     builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
+    // 注册服务
+    StatusServiceImpl service;
     builder.RegisterService(&service);
     // 构建并启动gRPC服务器
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
@@ -44,6 +45,5 @@ int main(int argc, char** argv) {
         std::cerr << "Error: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-
     return 0;
 }
