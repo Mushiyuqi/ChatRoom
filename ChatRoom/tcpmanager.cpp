@@ -24,7 +24,6 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
         // 当有数据可读时读取所有数据
         // 读取所有数据添加到缓冲区
         m_buffer.append(m_socket.readAll());
-
         QDataStream stream(&m_buffer, QIODevice::ReadOnly);
         stream.setVersion(QDataStream::Qt_6_0);
 
@@ -145,4 +144,38 @@ void TcpManager::HandleMsg(ReqId id, int len, QByteArray data)
     }
 
     find_iter.value()(id, len, data);
+}
+
+void TcpManager::slot_tcp_connect(ServerInfo server)
+{
+    m_host = server.Host;
+    m_port = static_cast<uint16_t>(server.Port.toUInt());
+    m_socket.connectToHost(m_host, m_port);
+}
+
+void TcpManager::slot_send_data(ReqId reqId, QString data)
+{
+    uint16_t id = reqId;
+
+    // 将字符串转换为UTF-8编码的字节数组
+    QByteArray dataBytes = data.toUtf8();
+
+    // 计算长度（使用网络字节序转换）
+    quint16 len = static_cast<quint16>(data.size());
+
+    // 创建一个QByteArray用于存储要发送的所有数据
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+
+    // 设置数据流使用网络字节序
+    out.setByteOrder(QDataStream::BigEndian);
+
+    // 写入ID和长度
+    out << id << len;
+
+    // 添加字符串数据
+    block.append(data.toUtf8());
+
+    // 发送数据
+    m_socket.write(block);
 }
