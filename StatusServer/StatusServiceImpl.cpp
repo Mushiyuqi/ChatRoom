@@ -28,7 +28,7 @@ StatusServiceImpl::StatusServiceImpl() {
 }
 
 Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatServerReq* request,
-    GetChatServerRsp* reply) {
+                                        GetChatServerRsp* reply) {
     // 获取聊天服务器
     const auto& server = GetChatServer();
     // 编辑回复信息
@@ -38,6 +38,8 @@ Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatSer
     reply->set_token(generate_unique_string());
     // 记录Token
     InsertToken(request->uid(), reply->token());
+    std::cout<< "StatusServiceImpl GetChatServer uid:" << request->uid() << " token:" << reply->token() << std::endl;
+
     return Status::OK;
 }
 
