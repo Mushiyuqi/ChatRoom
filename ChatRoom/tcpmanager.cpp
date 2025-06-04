@@ -65,29 +65,29 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
     [&](QAbstractSocket::SocketError error){
         Q_UNUSED(error)
         qDebug() << "TcpManager Error:" << m_socket.errorString();
-        // switch (error) {
-        // case QTcpSocket::ConnectionRefusedError:
-        //     qDebug() << "Connection Refused!";
-        //     emit sig_con_success(false);
-        //     break;
-        // case QTcpSocket::RemoteHostClosedError:
-        //     qDebug() << "Remote Host Closed Connection!";
-        //     break;
-        // case QTcpSocket::HostNotFoundError:
-        //     qDebug() << "Host Not Found!";
-        //     emit sig_con_success(false);
-        //     break;
-        // case QTcpSocket::SocketTimeoutError:
-        //     qDebug() << "Connection Timeout!";
-        //     emit sig_con_success(false);
-        //     break;
-        // case QTcpSocket::NetworkError:
-        //     qDebug() << "Network Error!";
-        //     break;
-        // default:
-        //     qDebug() << "Other Error!";
-        //     break;
-        // }
+        switch (error) {
+        case QTcpSocket::ConnectionRefusedError:
+            qDebug() << "Connection Refused!";
+            emit sig_con_success(false);
+            break;
+        case QTcpSocket::RemoteHostClosedError:
+            qDebug() << "Remote Host Closed Connection!";
+            break;
+        case QTcpSocket::HostNotFoundError:
+            qDebug() << "Host Not Found!";
+            emit sig_con_success(false);
+            break;
+        case QTcpSocket::SocketTimeoutError:
+            qDebug() << "Connection Timeout!";
+            emit sig_con_success(false);
+            break;
+        case QTcpSocket::NetworkError:
+            qDebug() << "Network Error!";
+            break;
+        default:
+            qDebug() << "Other Error!";
+            break;
+        }
     });
 
     // 处理连接断开

@@ -2,6 +2,7 @@
 #include "ui_logindialog.h"
 #include "clickedlabel.h"
 #include "httpmanager.h"
+#include "tcpmanager.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -13,12 +14,24 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // 初始化回调函数
     InitHttpHandlers();
 
-    connect(&HttpManager::GetInstance(), &HttpManager::sig_login_mod_finish, this, &LoginDialog::slot_login_mod_finish);
+    connect(&HttpManager::GetInstance(), &HttpManager::sig_login_mod_finish,
+            this, &LoginDialog::slot_login_mod_finish);
     connect(ui->reg_btn, &QPushButton::clicked, this, &LoginDialog::switchRegister);
 
     // 设置忘记密码按钮的状态
     ui->forget_label->SetState("normal", "hover", "", "selected", "selected_hover", "");
     connect(ui->forget_label, &ClickedLabel::clicked, this, &LoginDialog::slot_forget_pwd);
+
+    // 连接tcp连接请求的信号和槽函数
+    connect(this, &LoginDialog::sig_connect_tcp,
+            &(TcpManager::GetInstance()), &TcpManager::slot_tcp_connect);
+    // 连接tcp管理者发出的连接成功信号
+    connect(&(TcpManager::GetInstance()), &TcpManager::sig_con_success,
+            this, &LoginDialog::slot_tcp_con_finish);
+    // 连接tcp管理者发出的登陆失败信号
+    connect(&(TcpManager::GetInstance()), &TcpManager::sig_login_failed,
+            this, &LoginDialog::slot_login_failed);
+
 }
 
 LoginDialog::~LoginDialog()
@@ -221,5 +234,15 @@ void LoginDialog::slot_login_mod_finish(ReqId id, QString res, ErrorCodes err)
     m_handlers[id](jsonDoc.object());
 
     return;
+}
+
+void LoginDialog::slot_tcp_con_finish(bool)
+{
+
+}
+
+void LoginDialog::slot_login_failed(int)
+{
+
 }
 

@@ -50,5 +50,8 @@ private slots:
     void slot_forget_pwd();
     void on_login_btn_clicked();
     void slot_login_mod_finish(ReqId id, QString res, ErrorCodes err);
+
+    void slot_tcp_con_finish(bool); // 处理连接聊天服务器
+    void slot_login_failed(int);   // 处理登陆聊天服务器
 };
 
