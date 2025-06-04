@@ -135,3 +135,14 @@ void TcpManager::InitHandlers()
         emit sig_switch_chatdlg();
     });
 }
+
+void TcpManager::HandleMsg(ReqId id, int len, QByteArray data)
+{
+    auto find_iter = m_handlers.find(id);
+    if(find_iter == m_handlers.end()){
+        qDebug() << "TcpManager::HandleMsg not found id ["<< id << "] to handle";
+        return;
+    }
+
+    find_iter.value()(id, len, data);
+}
