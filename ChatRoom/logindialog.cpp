@@ -173,8 +173,7 @@ void LoginDialog::InitHttpHandlers()
         si.Token = jsonObj["token"].toString();
 
         // 缓存数据
-        // m_uid = si.Uid;
-        // m_token = si.Token;
+        m_tmp_info = si;
 
         qDebug() << "LoginDialog::InitHttpHandlers ReqId::ID_LOGIN_USER : "
                  << "email is " << email
@@ -182,6 +181,7 @@ void LoginDialog::InitHttpHandlers()
                  << " host is "<< si.Host
                  << " Port is " << si.Port
                  << " Token is " << si.Token;
+
         emit sig_connect_tcp(si);
     });
 }
@@ -236,13 +236,29 @@ void LoginDialog::slot_login_mod_finish(ReqId id, QString res, ErrorCodes err)
     return;
 }
 
-void LoginDialog::slot_tcp_con_finish(bool)
+void LoginDialog::slot_tcp_con_finish(bool state)
 {
+    if(state){
+        ShowTip(tr("正在登陆......"), true);
+        QJsonObject jsonObj;
+        jsonObj["uid"] = m_tmp_info.Uid;
+        jsonObj["token"] = m_tmp_info.Token;
 
+        QJsonDocument jsonDoc(jsonObj);
+        QString jsonString = jsonDoc.toJson();
+
+        //发送tcp请求给chat server
+        TcpManager::GetInstance().SendData(ReqId::ID_CHAT_LOGIN, jsonString);
+    }else{
+        ShowTip(tr("网络异常......"), false);
+        EnableBtn(true);
+    }
 }
 
-void LoginDialog::slot_login_failed(int)
+void LoginDialog::slot_login_failed(int error)
 {
-
+    QString result = QString("登录失败, err is %1").arg(error);
+    ShowTip(result,false);
+    EnableBtn(true);
 }
 

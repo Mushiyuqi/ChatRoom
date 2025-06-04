@@ -41,6 +41,9 @@ private:
     QMap<TipErr, QString> m_tip_errs;
     QMap<ReqId, std::function<void(const QJsonObject&)>> m_handlers;
 
+    // 临时数据
+    ServerInfo m_tmp_info;
+
 signals:
     void switchRegister();
     void switchReset();

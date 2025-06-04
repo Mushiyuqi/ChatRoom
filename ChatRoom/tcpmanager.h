@@ -12,6 +12,8 @@ public:
     TcpManager& operator=(const TcpManager&) = delete;
 
     static TcpManager& GetInstance();
+    void SendData(ReqId reqId, QString data);
+    // void SendData(ReqId reqId, QString& data);
 
 private:
     TcpManager();
@@ -29,11 +31,11 @@ private:
 
 public slots:
     void slot_tcp_connect(ServerInfo);
-    void slot_send_data(ReqId reqId, QString data);
+    // void slot_send_data(ReqId reqId, QString data);
 signals:
     void sig_con_success(bool b_success);
-    void sig_send_data(ReqId reqId, QString data);
-    void sig_switch_chatdlg();
     void sig_login_failed(int);
+    // void sig_send_data(ReqId reqId, QString data);
+    void sig_switch_chatdlg();
 };
 
