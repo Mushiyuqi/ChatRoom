@@ -7,8 +7,6 @@ add_executable(ChatServer main.cpp
         MsgNode.h
         MsgNode.cpp
         const.h
-        AsioIOContextPool.cpp
-        AsioIOContextPool.h
         CServer.h
         CServer.cpp
         CSession.h
@@ -22,6 +20,8 @@ add_executable(ChatServer main.cpp
         message.grpc.pb.h
         message.pb.h
         message.pb.cc
+        IOContextPool.cpp
+        IOContextPool.h
 )
 
 # 将config.ini打包到构建目录方便调试

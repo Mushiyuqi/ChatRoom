@@ -1,5 +1,5 @@
 #include "CServer.h"
-#include "AsioIOContextPool.h"
+#include "IOContextPool.h"
 #include <iostream>
 
 CServer::CServer(boost::asio::io_context& io_context, const short port): _io_context(io_context),
@@ -38,7 +38,7 @@ void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::syste
 
 void CServer::StartAccept() {
     // 获取一个io_context
-    auto& io_context = AsioIOContextPool::GetInstance().GetIOContext();
+    auto& io_context = IOContextPool::GetInstance().GetIOContext();
     auto session = std::make_shared<CSession>(io_context, this);
     m_acceptor.async_accept(session->GetSocket(),
                             std::bind(&CServer::HandleAccept, this, session, std::placeholders::_1));
