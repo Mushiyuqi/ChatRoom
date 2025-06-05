@@ -6,8 +6,8 @@
 
 #include "LogicSystem.h"
 
-CSession::CSession(boost::asio::io_context& io_context, CServer* server): _io_context(io_context), m_socket(io_context),
-                                                                          _server(server), m_flag_close(false) {
+CSession::CSession(boost::asio::io_context& io_context, CServer* server):
+    _io_context(io_context), m_socket(io_context), _server(server), m_flag_close(false) {
     const boost::uuids::uuid uuid = boost::uuids::random_generator()();
     m_uuid = boost::uuids::to_string(uuid);
 

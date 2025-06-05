@@ -19,6 +19,11 @@
 #include <csignal>
 #include "message.grpc.pb.h"
 #include "message.pb.h"
+#include "GRPCConnPool.hpp"
+
+extern "C" {
+#include <hiredis/hiredis.h>
+}
 
 using boost::asio::ip::tcp;
 using boost::asio::awaitable;
@@ -28,6 +33,30 @@ using boost::asio::use_awaitable;
 using boost::asio::as_tuple;
 namespace this_coro = boost::asio::this_coro;
 
+namespace beast = boost::beast; // from <boost/beast.hpp>
+namespace http = beast::http; // from <boost/beast/http.hpp>
+namespace net = boost::asio; // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp; // from <boost/asio/ip/tcp.hpp>
+
+using grpc::Channel;
+using grpc::Status;
+using grpc::ClientContext;
+
+using message::GetVerifyReq;
+using message::GetVerifyRsp;
+using message::VerifyService;
+
+using message::GetChatServerReq;
+using message::GetChatServerRsp;
+using message::LoginReq;
+using message::LoginRsp;
+using message::StatusService;
+
+#define RedisPoolSize 5
+#define GRPCPoolSize 6
+#define MysqlPoolSize 5
+#define CodePrefix "code_"
+
 #pragma once
 #define MAX_MSG_LENGTH (1024*2)
 #define HEAD_TOTAL_LEN 4
@@ -36,6 +65,30 @@ namespace this_coro = boost::asio::this_coro;
 #define MAX_RECVQUE 10000
 #define MAX_SENDQUE 1000
 
-enum MSG_IDS {
-    MSG_HELLO_WORLD = 1001,
+enum ErrorCodes {
+    Success = 0,
+    ErrorJson = 1001, // Json 解析失败
+    RPCFailed = 1002, //  RPC 请求失败
+    VerifyExpired = 1003, // 验证码过期
+    VerifyCodeErr = 1004, // 验证码错误
+    SqlFailed = 1005, //  数据库操作失败
+    UserExist = 1006, // 用户已存在
+    EmailUsed = 1007, // 邮箱以被使用
+    PasswordErr = 1008, // 密码错误
+    EmailNotMatch = 1009, //  邮箱不匹配
+    PasswordUpFailed = 1010, // 密码修改失败
+    PasswordInvalid = 1011, // 密码不合法
+    TokenInvalid = 1012, // Token无效
+    UidInvalid = 1013, //uid无效
+};
+
+// Defer类
+class Defer {
+public:
+    // 接受一个lambda表达式或者函数指针
+    explicit Defer(std::function<void()> func) : m_func(func) {}
+    // 析构函数中执行传入的函数
+    ~Defer() {m_func();}
+private:
+    std::function<void()> m_func;
 };

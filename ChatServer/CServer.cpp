@@ -2,10 +2,8 @@
 #include "IOContextPool.h"
 #include <iostream>
 
-CServer::CServer(boost::asio::io_context& io_context, const short port): _io_context(io_context),
-                                                                         m_acceptor(_io_context,
-                                                                             tcp::endpoint(tcp::v4(), port)),
-                                                                         m_port(port) {
+CServer::CServer(boost::asio::io_context& io_context, const short port):
+    _io_context(io_context), m_acceptor(_io_context, tcp::endpoint(tcp::v4(), port)), m_port(port) {
     std::cout << "CServer::CServer() server is running" << std::endl
         << "ip is   : " << m_acceptor.local_endpoint().address() << std::endl
         << "port is : " << m_acceptor.local_endpoint().port() << std::endl;

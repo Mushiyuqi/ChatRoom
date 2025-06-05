@@ -22,6 +22,7 @@ add_executable(ChatServer main.cpp
         message.pb.cc
         IOContextPool.cpp
         IOContextPool.h
+        GRPCConnPool.hpp
 )
 
 # 将config.ini打包到构建目录方便调试

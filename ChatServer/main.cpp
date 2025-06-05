@@ -14,7 +14,7 @@ int main() {
         });
 
         auto portStr = ConfigManager::GetInstance()["SelfServer"]["Port"];
-        CServer server{io_context, static_cast<short>(atoi(portStr.c_str()))};
+        CServer server{io_context, static_cast<short>(std::stoi(portStr))};
         io_context.run();
     }
     catch (std::exception& e) {

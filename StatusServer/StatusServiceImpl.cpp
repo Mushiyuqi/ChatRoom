@@ -39,6 +39,7 @@ Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatSer
     // 记录Token
     InsertToken(request->uid(), reply->token());
     std::cout<< "StatusServiceImpl GetChatServer uid:" << request->uid() << " token:" << reply->token() << std::endl;
+    std::cout<< "StatusServiceImpl GetChatServer host:" << server.host << " port:" << server.port << std::endl;
 
     return Status::OK;
 }
