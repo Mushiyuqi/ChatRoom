@@ -14,8 +14,8 @@ AsioIOContextPool::AsioIOContextPool(std::size_t size): m_io_contexts(size), m_w
 }
 
 AsioIOContextPool::~AsioIOContextPool() {
-    std::cerr << "AsioIOContextPool::~AsioIOContextPool()" << std::endl;
     Stop();
+    std::cerr << "AsioIOContextPool::~AsioIOContextPool()" << std::endl;
 }
 
 AsioIOContextPool& AsioIOContextPool::GetInstance() {

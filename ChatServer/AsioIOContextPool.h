@@ -11,10 +11,12 @@ public:
     AsioIOContextPool(const AsioIOContextPool&) = delete;
     AsioIOContextPool& operator=(const AsioIOContextPool&) = delete;
     boost::asio::io_context& GetIOContext();
-    void Stop();
+
     static AsioIOContextPool& GetInstance();
 
 private:
+    void Stop();
+
     explicit AsioIOContextPool(std::size_t size = std::thread::hardware_concurrency());
     std::vector<IOContext> m_io_contexts;
     std::vector<WorkPtr> m_works;

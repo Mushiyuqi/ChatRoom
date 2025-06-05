@@ -1,25 +1,10 @@
-#include <iostream>
-#include <boost/asio.hpp>
-#include <csignal>
+#include "const.h"
 #include "CServer.h"
-#include "AsioIOContextPool.h"
-#include "LogicSystem.h"
-
-using boost::asio::ip::tcp;
-using boost::asio::awaitable;
-using boost::asio::co_spawn;
-using boost::asio::detached;
-using boost::asio::use_awaitable;
-using boost::asio::as_tuple;
-namespace this_coro = boost::asio::this_coro;
-
+#include "ConfigManager.h"
 
 int main() {
     try {
-        // 初始化LogicSystem
-        LogicSystem::GetInstance();
-        // 初始化IOContextPool
-        AsioIOContextPool::GetInstance();
+        // 进程关闭自动关闭AsioIOContextPool
 
         // 用于监听连接请求和singal的io_context
         boost::asio::io_context io_context{};
@@ -28,7 +13,8 @@ int main() {
             io_context.stop();
         });
 
-        CServer server{io_context, 8091};
+        auto portStr = ConfigManager::GetInstance()["SelfServer"]["Port"];
+        CServer server{io_context, static_cast<short>(atoi(portStr.c_str()))};
         io_context.run();
     }
     catch (std::exception& e) {

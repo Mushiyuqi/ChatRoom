@@ -15,6 +15,13 @@ add_executable(ChatServer main.cpp
         CSession.cpp
         LogicSystem.h
         LogicSystem.cpp
+        ConfigManager.h
+        ConfigManager.cpp
+        message.proto
+        message.grpc.pb.cc
+        message.grpc.pb.h
+        message.pb.h
+        message.pb.cc
 )
 
 # 将config.ini打包到构建目录方便调试
