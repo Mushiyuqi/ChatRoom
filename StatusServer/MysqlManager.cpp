@@ -20,3 +20,7 @@ bool MysqlManager::UpdatePwd(const std::string& name, const std::string& passwor
 bool MysqlManager::CheckPassword(const std::string& email, const std::string& password, UserInfo& userInfo) {
     return  m_dao.CheckPwd(email, password, userInfo);
 }
+
+std::shared_ptr<UserInfo> MysqlManager::GetUser(const int uid) {
+    return m_dao.GetUser(uid);
+}

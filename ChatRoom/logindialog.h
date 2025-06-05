@@ -48,6 +48,7 @@ signals:
     void switchRegister();
     void switchReset();
     void sig_connect_tcp(ServerInfo si);
+    void sig_disconnect_tcp();
 
 private slots:
     void slot_forget_pwd();

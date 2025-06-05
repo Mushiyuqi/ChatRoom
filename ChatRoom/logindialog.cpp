@@ -25,6 +25,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // 连接tcp连接请求的信号和槽函数
     connect(this, &LoginDialog::sig_connect_tcp,
             &(TcpManager::GetInstance()), &TcpManager::slot_tcp_connect);
+    // 断开tcp连接请求的信号和槽函数
+    connect(this, &LoginDialog::sig_disconnect_tcp,
+            &(TcpManager::GetInstance()), &TcpManager::slot_tcp_disconnect);
     // 连接tcp管理者发出的连接成功信号
     connect(&(TcpManager::GetInstance()), &TcpManager::sig_con_success,
             this, &LoginDialog::slot_tcp_con_finish);
@@ -257,8 +260,12 @@ void LoginDialog::slot_tcp_con_finish(bool state)
 
 void LoginDialog::slot_login_failed(int error)
 {
+    // 显示错误提示
     QString result = QString("登录失败, err is %1").arg(error);
     ShowTip(result,false);
+    // 关闭tcp连接
+    emit sig_disconnect_tcp();
+    // 恢复按钮
     EnableBtn(true);
 }
 

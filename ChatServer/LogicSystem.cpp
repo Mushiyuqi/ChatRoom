@@ -1,4 +1,6 @@
 #include "LogicSystem.h"
+#include "StatusGrpcClient.h"
+#include "MysqlManager.h"
 
 LogicSystem::LogicSystem(): m_is_stop(false) {
     // 注册回调函数
@@ -16,6 +18,7 @@ LogicSystem::~LogicSystem() {
 
 void LogicSystem::PostMsgToQue(std::shared_ptr<LogicNode> msg) {
     std::unique_lock<std::mutex> lock(m_mutex);
+    // todo 接收队列满时，发送服务器繁忙信息
     m_msg_que.push(std::move(msg));
     if (m_msg_que.size() == 1) {
         m_cond.notify_one();
@@ -81,14 +84,51 @@ void LogicSystem::DealMsg() {
 
 void LogicSystem::RegisterCallBacks() {
     // 测试ChatRoom的登陆功能
-    m_fun_callbacks[1005] = [](std::shared_ptr<CSession> session, const short& msg_id,
-                                    const std::string& msg_data) {
-        // 处理Json数据
-        Json::Reader reader;
-        Json::Value value;
-        reader.parse(msg_data, value);
-        std::cout << "LogicSystem::1005 recv msg id is : " << value["uid"].asInt() << std::endl;
-        std::cout << "LogicSystem::1005 recv msg is    : " << value["token"].asString() << std::endl;
-    };
+    m_fun_callbacks[ReqId::ID_CHAT_LOGIN] =
+        [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
+            // 处理Json数据
+            Json::Reader reader;
+            Json::Value value;
+            reader.parse(msg_data, value);
+            // 获取数据
+            int uid = value["uid"].asInt();
+            std::string token = value["token"].asString();
+
+            std::cout << "LogicSystem::ID_CHAT_LOGIN recv msg id is : " << uid << std::endl;
+            std::cout << "LogicSystem::ID_CHAT_LOGIN recv msg is    : " << token << std::endl;
+
+            // 注册返回函数
+            Json::Value rspJson;
+            Defer defer([this, &rspJson, session]() {
+                const std::string rspStr = rspJson.toStyledString();
+                session->Send(rspStr, ReqId::ID_CHAT_LOGIN);
+            });
+
+            // 从状态服务器获取Token进行匹配
+            auto rspRpc = StatusGrpcClient::GetInstance().Login(uid, token);
+            rspJson["error"] = rspRpc.error();
+            if (rspRpc.error() != ErrorCodes::Success) {
+                return;
+            }
+
+            std::shared_ptr<UserInfo> userInfo = nullptr;
+            // 从内存中查询用户信息
+            if (!m_users.contains(uid)) {
+                // 从数据库中查询用户信息
+                userInfo = MysqlManager::GetInstance().GetUser(uid);
+                if (userInfo == nullptr) {
+                    rspJson["error"] = ErrorCodes::UidInvalid;
+                    return;
+                }
+                m_users[uid] = userInfo;
+            }
+            else {
+                userInfo = m_users[uid];
+            }
+
+            rspJson["uid"] = uid;
+            rspJson["token"] = token;
+            rspJson["name"] = userInfo->name;
+        };
 }
 

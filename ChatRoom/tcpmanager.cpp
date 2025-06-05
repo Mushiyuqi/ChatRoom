@@ -95,16 +95,13 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
         qDebug() << "TcpManager Disconnected from server.";
     });
 
-    // 连接发送信号用来发送数据
-    // QObject::connect(this, &TcpManager::sig_send_data, this, &TcpManager::slot_send_data);
-
     // 注册消息
     InitHandlers();
 }
 
 void TcpManager::InitHandlers()
 {
-    m_handlers.insert(ReqId::ID_CHAT_LOGIN_RSP, [this](ReqId id, int len, QByteArray data){
+    m_handlers.insert(ReqId::ID_CHAT_LOGIN, [this](ReqId id, int len, QByteArray data){
         Q_UNUSED(len)
         // 将QByteArray转换为QJsonDocument
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
@@ -112,6 +109,8 @@ void TcpManager::InitHandlers()
         // 检查转换是否成功
         if(jsonDoc.isNull()){
             qDebug() << "TcpManager: Failed to create QJsonDocument.";
+            int error = ErrorCodes::ERR_JSON;
+            emit sig_login_failed(error);
             return;
         }
 
@@ -131,6 +130,7 @@ void TcpManager::InitHandlers()
         }
 
         // 切换页面
+        qDebug() << "登陆成功";
         emit sig_switch_chatdlg();
     });
 }
@@ -151,6 +151,10 @@ void TcpManager::slot_tcp_connect(ServerInfo server)
     m_host = server.Host;
     m_port = static_cast<uint16_t>(server.Port.toUInt());
     m_socket.connectToHost(m_host, m_port);
+}
+
+void TcpManager::slot_tcp_disconnect(){
+    m_socket.disconnectFromHost();
 }
 
 void TcpManager::SendData(ReqId reqId, QString data)
@@ -179,35 +183,3 @@ void TcpManager::SendData(ReqId reqId, QString data)
     // 发送数据
     m_socket.write(block);
 }
-
-// void TcpManager::SendData(ReqId reqId, QString &data)
-// {
-//     emit sig_send_data(reqId, data);
-// }
-
-// void TcpManager::slot_send_data(ReqId reqId, QString data)
-// {
-//     uint16_t id = reqId;
-
-//     // 将字符串转换为UTF-8编码的字节数组
-//     QByteArray dataBytes = data.toUtf8();
-
-//     // 计算长度（使用网络字节序转换）
-//     quint16 len = static_cast<quint16>(data.size());
-
-//     // 创建一个QByteArray用于存储要发送的所有数据
-//     QByteArray block;
-//     QDataStream out(&block, QIODevice::WriteOnly);
-
-//     // 设置数据流使用网络字节序
-//     out.setByteOrder(QDataStream::BigEndian);
-
-//     // 写入ID和长度
-//     out << id << len;
-
-//     // 添加字符串数据
-//     block.append(dataBytes);
-
-//     // 发送数据
-//     m_socket.write(block);
-// }

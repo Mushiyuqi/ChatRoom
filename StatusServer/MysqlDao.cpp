@@ -1,4 +1,6 @@
 #include "MysqlDao.h"
+
+#include <memory>
 #include "ConfigManager.h"
 #include "MysqlPool.h"
 
@@ -167,51 +169,88 @@ bool MysqlDao::CheckPwd(const std::string& email, const std::string& pwd, UserIn
 	}
 }
 
-bool MysqlDao::TestProcedure(const std::string& email, int& uid, std::string& name) {
+std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 	auto con = m_pool->getConnection();
+	if (con == nullptr) {
+		return nullptr;
+	}
+
+	Defer defer([this, &con]() {
+		m_pool->returnConnection(std::move(con));
+	});
+
 	try {
-		if (con == nullptr) {
-			return false;
+		// 准备SQL语句
+		std::unique_ptr<sql::PreparedStatement> pstmt(con->m_conn->prepareStatement("SELECT * FROM user WHERE uid = ?"));
+		pstmt->setInt(1, uid); // 将uid替换为你要查询的uid
+
+		// 执行查询
+		std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+		std::shared_ptr<UserInfo> userPtr = nullptr;
+		// 遍历结果集
+		while (res->next()) {
+			userPtr = std::make_shared<UserInfo>();
+			userPtr->pwd = res->getString("pwd");
+			userPtr->email = res->getString("email");
+			userPtr->name = res->getString("name");
+			userPtr->uid = uid;
+			break;
 		}
-
-		Defer defer([this, &con]() {
-			m_pool->returnConnection(std::move(con));
-		});
-		// 准备调用存储过程
-		std::unique_ptr<sql::PreparedStatement> stmt(
-			con->m_conn->prepareStatement("CALL test_procedure(?,@userId,@userName)"));
-		// 设置输入参数
-		stmt->setString(1, email);
-
-		// 由于PreparedStatement不直接支持注册输出参数，我们需要使用会话变量或其他方法来获取输出参数的值
-
-		// 执行存储过程
-		stmt->execute();
-		// 如果存储过程设置了会话变量或有其他方式获取输出参数的值，你可以在这里执行SELECT查询来获取它们
-		// 例如，如果存储过程设置了一个会话变量@result来存储输出结果，可以这样获取：
-		std::unique_ptr<sql::Statement> stmtResult(con->m_conn->createStatement());
-		std::unique_ptr<sql::ResultSet> res(stmtResult->executeQuery("SELECT @userId AS uid"));
-		if (!(res->next())) {
-			return false;
-		}
-
-		uid = res->getInt("uid");
-		std::cout << "uid: " << uid << std::endl;
-
-		stmtResult.reset(con->m_conn->createStatement());
-		res.reset(stmtResult->executeQuery("SELECT @userName AS name"));
-		if (!(res->next())) {
-			return false;
-		}
-
-		name = res->getString("name");
-		std::cout << "name: " << name << std::endl;
-		return true;
+		return userPtr;
 	}
 	catch (sql::SQLException& e) {
-		std::cerr << "SQLException: " << e.what();
+		std::cerr << "MysqlDao::GetUser SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
-		return false;
+		return nullptr;
 	}
 }
+
+// bool MysqlDao::TestProcedure(const std::string& email, int& uid, std::string& name) {
+// 	auto con = m_pool->getConnection();
+// 	try {
+// 		if (con == nullptr) {
+// 			return false;
+// 		}
+//
+// 		Defer defer([this, &con]() {
+// 			m_pool->returnConnection(std::move(con));
+// 		});
+// 		// 准备调用存储过程
+// 		std::unique_ptr<sql::PreparedStatement> stmt(
+// 			con->m_conn->prepareStatement("CALL test_procedure(?,@userId,@userName)"));
+// 		// 设置输入参数
+// 		stmt->setString(1, email);
+//
+// 		// 由于PreparedStatement不直接支持注册输出参数，我们需要使用会话变量或其他方法来获取输出参数的值
+//
+// 		// 执行存储过程
+// 		stmt->execute();
+// 		// 如果存储过程设置了会话变量或有其他方式获取输出参数的值，你可以在这里执行SELECT查询来获取它们
+// 		// 例如，如果存储过程设置了一个会话变量@result来存储输出结果，可以这样获取：
+// 		std::unique_ptr<sql::Statement> stmtResult(con->m_conn->createStatement());
+// 		std::unique_ptr<sql::ResultSet> res(stmtResult->executeQuery("SELECT @userId AS uid"));
+// 		if (!(res->next())) {
+// 			return false;
+// 		}
+//
+// 		uid = res->getInt("uid");
+// 		std::cout << "uid: " << uid << std::endl;
+//
+// 		stmtResult.reset(con->m_conn->createStatement());
+// 		res.reset(stmtResult->executeQuery("SELECT @userName AS name"));
+// 		if (!(res->next())) {
+// 			return false;
+// 		}
+//
+// 		name = res->getString("name");
+// 		std::cout << "name: " << name << std::endl;
+// 		return true;
+// 	}
+// 	catch (sql::SQLException& e) {
+// 		std::cerr << "SQLException: " << e.what();
+// 		std::cerr << " (MySQL error code: " << e.getErrorCode();
+// 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+// 		return false;
+// 	}
+// }

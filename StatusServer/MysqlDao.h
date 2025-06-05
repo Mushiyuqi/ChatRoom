@@ -18,7 +18,9 @@ public:
     bool CheckEmail(const std::string& name, const std::string & email);
     bool UpdatePwd(const std::string& name, const std::string& newpwd);
     bool CheckPwd(const std::string& email, const std::string& pwd, UserInfo& userInfo);
-    bool TestProcedure(const std::string& email, int& uid, std::string& name);
+    std::shared_ptr<UserInfo> GetUser(int uid);
+
+    // bool TestProcedure(const std::string& email, int& uid, std::string& name);
 private:
     std::unique_ptr<MySqlPool> m_pool;
 };

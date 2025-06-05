@@ -7,6 +7,8 @@
 #include "CSession.h"
 #include "const.h"
 
+struct UserInfo;
+
 typedef std::function<void(std::shared_ptr<CSession>, const short& msg_id, const std::string& msg_data)> FunCallBack;
 class LogicSystem {
 public:
@@ -26,6 +28,7 @@ private:
     std::condition_variable m_cond;
     bool m_is_stop;
     std::map<short, FunCallBack> m_fun_callbacks;
-
+    // 缓存用户信息
+    std::unordered_map<int, std::shared_ptr<UserInfo>> m_users;
 };
 

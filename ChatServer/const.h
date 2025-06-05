@@ -57,6 +57,7 @@ using message::StatusService;
 #define MysqlPoolSize 5
 #define CodePrefix "code_"
 
+// Tcp服务器需要的宏
 #pragma once
 #define MAX_MSG_LENGTH (1024*2)
 #define HEAD_TOTAL_LEN 4
@@ -80,6 +81,15 @@ enum ErrorCodes {
     PasswordInvalid = 1011, // 密码不合法
     TokenInvalid = 1012, // Token无效
     UidInvalid = 1013, //uid无效
+};
+
+// 来自Qt客户端的请求Id
+enum ReqId{
+    ID_GET_VERIFY_CODE = 1001, // 获取验证码
+    ID_REG_USER = 1002, // 注册用户
+    ID_RESET_PWD = 1003, //重置密码
+    ID_LOGIN_USER = 1004, //用户登录
+    ID_CHAT_LOGIN = 1005, //登陆聊天服务器
 };
 
 // Defer类

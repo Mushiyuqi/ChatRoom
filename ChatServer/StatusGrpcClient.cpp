@@ -37,6 +37,7 @@ LoginRsp StatusGrpcClient::Login(int uid, std::string token) {
      LoginReq request;
      // 编辑发送请求
      request.set_uid(uid);
+     request.set_token(token);
      // 获取连接
      auto stub = m_connPool.GetConnection();
      // 发送请求

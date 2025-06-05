@@ -23,6 +23,18 @@ add_executable(ChatServer main.cpp
         IOContextPool.cpp
         IOContextPool.h
         GRPCConnPool.hpp
+        StatusGrpcClient.cpp
+        StatusGrpcClient.h
+        MysqlDao.cpp
+        MysqlDao.h
+        MysqlManager.cpp
+        MysqlManager.h
+        MysqlPool.cpp
+        MysqlPool.h
+        RedisConnPool.cpp
+        RedisConnPool.h
+        RedisManager.cpp
+        RedisManager.h
 )
 
 # 将config.ini打包到构建目录方便调试
