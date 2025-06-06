@@ -157,7 +157,7 @@ void TcpManager::slot_tcp_disconnect(){
     m_socket.disconnectFromHost();
 }
 
-void TcpManager::SendData(ReqId reqId, QString data)
+void TcpManager::slot_tcp_send_data(ReqId reqId, QString data)
 {
     uint16_t id = reqId;
 
