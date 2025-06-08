@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 创建切换到聊天页面的连接
     connect(&(TcpManager::GetInstance()), &TcpManager::sig_switch_chatdlg,
             this, &MainWindow::SlotSwitchChat);
+
+    // 测试 need deleted after
+    emit TcpManager::GetInstance().sig_switch_chatdlg();
 }
 
 MainWindow::~MainWindow()
