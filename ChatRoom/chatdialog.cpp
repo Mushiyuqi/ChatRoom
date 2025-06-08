@@ -6,6 +6,9 @@ ChatDialog::ChatDialog(QWidget *parent)
     , ui(new Ui::ChatDialog)
 {
     ui->setupUi(this);
+    // 设置add按钮样式
+    ui->add_btn->SetState("normal", "hover", "press");
+    ui->add_btn->setProperty("state", "normal");
 }
 
 ChatDialog::~ChatDialog()

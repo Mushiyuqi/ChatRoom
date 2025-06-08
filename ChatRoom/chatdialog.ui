@@ -39,13 +39,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>50</width>
+       <width>58</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>50</width>
+       <width>58</width>
        <height>16777215</height>
       </size>
      </property>
@@ -242,7 +242,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="add_btn">
+          <widget class="ClickedBtn" name="add_btn">
            <property name="minimumSize">
             <size>
              <width>24</width>
@@ -256,7 +256,7 @@
             </size>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -559,6 +559,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickedBtn</class>
+   <extends>QPushButton</extends>
+   <header location="global">clickedbtn.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
