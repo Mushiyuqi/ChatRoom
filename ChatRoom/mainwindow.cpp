@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "resetdialog.h"
+#include "tcpmanager.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
     // 创建和重置密码连接
     connect(m_login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+    // 创建切换到聊天页面的连接
+    connect(&(TcpManager::GetInstance()), &TcpManager::sig_switch_chatdlg,
+            this, &MainWindow::SlotSwitchChat);
 }
 
 MainWindow::~MainWindow()
@@ -79,5 +83,18 @@ void MainWindow::SlotSwitchLogin2()
     connect(m_login_dlg, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchReg);
     //连接登录界面忘记密码信号
     connect(m_login_dlg, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+}
+
+void MainWindow::SlotSwitchChat()
+{
+    m_chat_dlg = new ChatDialog(this);
+    m_chat_dlg->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
+    setCentralWidget(m_chat_dlg);
+
+    m_login_dlg->hide();
+    m_chat_dlg->show();
+
+    this->setMinimumSize(QSize(1050, 700));
+    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
 

@@ -1,6 +1,8 @@
 #include "tcpmanager.h"
 #include <QAbstractSocket>
 #include <QJsonDocument>
+#include <qendian.h>
+#include "usermanager.h"
 
 TcpManager::~TcpManager()
 {
@@ -26,7 +28,6 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
         m_buffer.append(m_socket.readAll());
         QDataStream stream(&m_buffer, QIODevice::ReadOnly);
         stream.setVersion(QDataStream::Qt_6_0);
-
         forever{
             // 先解析头部
             if(!m_b_recv_pending){
@@ -36,6 +37,7 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
                 }
                 // 预读取消息ID和消息长度，但不从缓冲区中移除
                 stream >> m_message_id >> m_message_len;
+
                 //将buffer 中的前四个字节移除
                 m_buffer = m_buffer.mid(sizeof(quint16) * 2);
 
@@ -128,6 +130,11 @@ void TcpManager::InitHandlers()
             emit sig_login_failed(error);
             return;
         }
+
+        // 持续化数据
+        UserManager::GetInstance().SetName(jsonObj["name"].toString());
+        UserManager::GetInstance().SetUid(jsonObj["uid"].toInt());
+        UserManager::GetInstance().SetToken(jsonObj["token"].toString());
 
         // 切换页面
         qDebug() << "登陆成功";

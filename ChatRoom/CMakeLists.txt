@@ -30,6 +30,8 @@ qt_add_executable(ChatRoom
     clickedlabel.h clickedlabel.cpp
     resetdialog.h resetdialog.cpp resetdialog.ui
     tcpmanager.h tcpmanager.cpp
+    usermanager.h usermanager.cpp
+    chatdialog.h chatdialog.cpp chatdialog.ui
 )
 
 
