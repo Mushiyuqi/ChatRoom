@@ -75,3 +75,8 @@ background: qlineargradient(
 #add_btn[state='press']{
     border-image: url(':/resource/add_friend_hover.png')
 }
+
+#search_edit{
+    background-color:rgb(247,247,247);
+    border: 2px solid #f1f1f1;
+}

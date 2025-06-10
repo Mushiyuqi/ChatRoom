@@ -181,13 +181,13 @@
     <widget class="QWidget" name="chat_user_wid" native="true">
      <property name="minimumSize">
       <size>
-       <width>200</width>
+       <width>250</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
+       <width>250</width>
        <height>16777215</height>
       </size>
      </property>
@@ -223,7 +223,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="search_edit"/>
+          <widget class="CustomizeEdit" name="search_edit"/>
          </item>
          <item>
           <spacer name="horizontalSpacer">
@@ -564,6 +564,11 @@
    <class>ClickedBtn</class>
    <extends>QPushButton</extends>
    <header location="global">clickedbtn.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomizeEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">customizeedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
