@@ -1,6 +1,7 @@
 #include "resetdialog.h"
 #include "ui_resetdialog.h"
 #include "httpmanager.h"
+#include <QAction>
 
 ResetDialog::ResetDialog(QWidget *parent)
     : QDialog(parent)
@@ -18,10 +19,44 @@ ResetDialog::ResetDialog(QWidget *parent)
         CheckEmailValid();
     });
 
+    // 密码可见性逻辑
     connect(ui->pwd_edit, &QLineEdit::editingFinished, this, [this](){
         CheckPassValid();
     });
-
+    ui->pwd_edit->setEchoMode(QLineEdit::Password);
+    ui->pwd_edit->setProperty("state", "unvisible");
+    QAction* visibleAction = new QAction(ui->pwd_edit);
+    visibleAction->setIcon(QIcon(""));
+    ui->pwd_edit->addAction(visibleAction, QLineEdit::TrailingPosition);
+    connect(ui->pwd_edit, &QLineEdit::textChanged, [visibleAction, this](const QString& text){
+        if(text.isEmpty()){
+            visibleAction->setIcon(QIcon(""));
+            return;
+        }
+        if(ui->pwd_edit->property("state").toString() == "unvisible"){
+            visibleAction->setIcon(QIcon(":/resource/unvisible.png"));
+            return;
+        }
+        if(ui->pwd_edit->property("state").toString() == "visible"){
+            visibleAction->setIcon(QIcon(":/resource/visible.png"));
+            return;
+        }
+    });
+    connect(visibleAction, &QAction::triggered, [visibleAction, this](){
+        if(ui->pwd_edit->text().isEmpty()) return;
+        if(ui->pwd_edit->property("state").toString() == "unvisible"){
+            ui->pwd_edit->setEchoMode(QLineEdit::Normal);
+            visibleAction->setIcon(QIcon(":/resource/visible.png"));
+            ui->pwd_edit->setProperty("state", "visible");
+            return;
+        }
+        if(ui->pwd_edit->property("state").toString() == "visible"){
+            ui->pwd_edit->setEchoMode(QLineEdit::Password);
+            visibleAction->setIcon(QIcon(":/resource/unvisible.png"));
+            ui->pwd_edit->setProperty("state", "unvisible");
+            return;
+        }
+    });
 
     connect(ui->verify_edit, &QLineEdit::editingFinished, this, [this](){
         CheckVerifyValid();

@@ -30,7 +30,10 @@ ChatDialog::ChatDialog(QWidget *parent)
         }
     });
     connect(clearAction, &QAction::triggered, [this](){
+        // 清除文本
         ui->search_edit->clear();
+        // 清除焦点
+        ui->search_edit->clearFocus();
     });
 
 }
