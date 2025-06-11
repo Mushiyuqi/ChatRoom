@@ -16,6 +16,8 @@ public:
     explicit ChatDialog(QWidget *parent = nullptr);
     ~ChatDialog();
 
+    void AddChatUserList();
+
 private:
     void ShowSearch(bool bsearch = false);
 

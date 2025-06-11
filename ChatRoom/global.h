@@ -61,3 +61,13 @@ enum ChatUIMode{
     ContactMode,// 联系人模式
 };
 
+//自定义QListWidgetItem的几种类型
+enum ListItemType{
+    Chat_User_Item, //聊天用户
+    Contact_User_Item, //联系人用户
+    Search_User_Item, //搜索到的用户
+    AddUser_Tip_Item, //提示添加用户
+    Invalid_Item,  //不可点击条目
+};
+
+
