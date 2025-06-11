@@ -54,3 +54,10 @@ struct ServerInfo{
     int Uid;
 };
 
+// 聊天界面几种模式
+enum ChatUIMode{
+    SearchMode, // 搜索模式
+    ChatMode,   // 聊天模式
+    ContactMode,// 联系人模式
+};
+

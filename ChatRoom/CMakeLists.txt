@@ -34,6 +34,7 @@ qt_add_executable(ChatRoom
     chatdialog.h chatdialog.cpp chatdialog.ui
     clickedbtn.h clickedbtn.cpp
     customizeedit.h customizeedit.cpp
+    chatuserlist.h chatuserlist.cpp
 )
 
 

@@ -2,6 +2,7 @@
 #define CHATDIALOG_H
 
 #include <QDialog>
+#include "global.h"
 
 namespace Ui {
 class ChatDialog;
@@ -16,7 +17,13 @@ public:
     ~ChatDialog();
 
 private:
+    void ShowSearch(bool bsearch = false);
+
     Ui::ChatDialog *ui;
+
+    ChatUIMode m_mode;
+    ChatUIMode m_state;
+    bool m_b_loading;
 };
 
 #endif // CHATDIALOG_H
