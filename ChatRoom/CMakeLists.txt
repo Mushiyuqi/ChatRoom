@@ -37,6 +37,7 @@ qt_add_executable(ChatRoom
     chatuserlist.h chatuserlist.cpp
     chatuseritem.h chatuseritem.cpp chatuseritem.ui
     listitembase.h listitembase.cpp
+    loadingdlg.h loadingdlg.cpp loadingdlg.ui
 )
 
 

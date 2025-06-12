@@ -1,6 +1,7 @@
 #include "chatdialog.h"
 #include "ui_chatdialog.h"
 #include "chatuseritem.h"
+#include "loadingdlg.h"
 #include <QAction>
 #include <QRandomGenerator>
 
@@ -47,6 +48,8 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     // 测试用例
     AddChatUserList();
+    connect(ui->chat_user_list, &ChatUserList::sig_loading_chat_user,
+            this, &ChatDialog::slot_loading_chat_user);
 }
 
 ChatDialog::~ChatDialog()
@@ -117,4 +120,24 @@ void ChatDialog::ShowSearch(bool bsearch)
         ui->con_user_list->show();
         m_mode = ChatUIMode::ContactMode;
     }
+}
+
+void ChatDialog::slot_loading_chat_user()
+{
+    // 判断当前是否是正在加载数据
+    if(m_b_loading){
+        return;
+    }
+
+    m_b_loading = true;
+    LoadingDlg *loadingDialog = new LoadingDlg(this);
+    loadingDialog->setModal(true);
+    loadingDialog->show();
+    qDebug() << "add new data to list.....";
+    AddChatUserList();
+    // 加载完成后关闭对话框
+    loadingDialog->deleteLater();
+
+    m_b_loading = false;
+
 }

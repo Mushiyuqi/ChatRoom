@@ -1,6 +1,4 @@
-#ifndef CHATDIALOG_H
-#define CHATDIALOG_H
-
+#pragma once
 #include <QDialog>
 #include "global.h"
 
@@ -26,6 +24,8 @@ private:
     ChatUIMode m_mode;
     ChatUIMode m_state;
     bool m_b_loading;
+
+private slots:
+    void slot_loading_chat_user();
 };
 
-#endif // CHATDIALOG_H
