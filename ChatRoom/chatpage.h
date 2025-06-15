@@ -15,6 +15,10 @@ public:
     explicit ChatPage(QWidget *parent = nullptr);
     ~ChatPage();
 
+protected:
+    virtual void paintEvent(QPaintEvent *event) override;
+
+
 private:
     Ui::ChatPage *ui;
 };
