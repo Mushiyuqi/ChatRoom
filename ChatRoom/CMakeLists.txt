@@ -43,6 +43,7 @@ qt_add_executable(ChatRoom
     chatitembase.h chatitembase.cpp
     bubbleframe.h bubbleframe.cpp
     textbubble.h textbubble.cpp
+    picturebubble.h picturebubble.cpp
 )
 
 

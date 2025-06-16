@@ -31,3 +31,9 @@ void ChatPage::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
+
+void ChatPage::on_send_btn_clicked()
+{
+
+}
+
