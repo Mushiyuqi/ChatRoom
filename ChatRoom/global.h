@@ -71,3 +71,11 @@ enum ListItemType{
 };
 
 
+enum class ChatRole
+{
+    Self,
+    Other
+};
+
+
+
