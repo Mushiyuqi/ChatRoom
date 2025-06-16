@@ -51,3 +51,4 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
     return QListWidget::eventFilter(watched, event);
 
 }
+
