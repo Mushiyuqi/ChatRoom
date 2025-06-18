@@ -3,6 +3,8 @@
 #include <QObject>
 #include "global.h"
 
+class SearchInfo;
+
 class TcpManager:public QObject
 {
     Q_OBJECT
@@ -35,5 +37,6 @@ signals:
     void sig_con_success(bool b_success);
     void sig_login_failed(int);
     void sig_switch_chatdlg();
+    void sig_user_search(std::shared_ptr<SearchInfo>);
 };
 

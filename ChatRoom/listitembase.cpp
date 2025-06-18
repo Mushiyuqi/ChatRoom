@@ -23,7 +23,6 @@ void ListItemBase::paintEvent(QPaintEvent *event)
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
 }
 
 

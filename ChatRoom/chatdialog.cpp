@@ -30,11 +30,15 @@ ChatDialog::ChatDialog(QWidget *parent)
     QAction* clearAction = new QAction(ui->search_edit);
     clearAction->setIcon(QIcon(":/resource/close_transparent.png"));
     ui->search_edit->addAction(clearAction, QLineEdit::TrailingPosition);
-    connect(ui->search_edit, &QLineEdit::textChanged, [clearAction](const QString &text){
+    connect(ui->search_edit, &QLineEdit::textChanged, [this, clearAction](const QString &text){
         if(!text.isEmpty()){
             clearAction->setIcon(QIcon(":/resource/close_search.png"));
+            // 按下清除按钮则显示搜索列表
+            ShowSearch(true);
         }else{
             clearAction->setIcon(QIcon(":/resource/close_transparent.png"));
+            // 按下清除按钮则不显示搜索列表
+            ShowSearch(false);
         }
     });
     connect(clearAction, &QAction::triggered, [this](){

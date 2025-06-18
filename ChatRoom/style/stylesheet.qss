@@ -307,4 +307,51 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     border-image: url(:/resource/contact_list_press.png);
 }
 
+#search_edit {
+    border: 2px solid #f1f1f1;
+}
+
+/* 搜索框列表*/
+#search_list {
+    background-color: rgb(247,247,248);
+    border: none;
+}
+
+#search_list::item:selected {
+    background-color: #d3d7d4;
+    border: none;
+    outline: none;
+}
+
+#search_list::item:hover {
+    background-color: rgb(206,207,208);
+    border: none;
+    outline: none;
+}
+
+#search_list::focus {
+    border: none;
+    outline: none;
+}
+
+#invalid_item {
+    background-color: #eaeaea;
+    border: none;
+}
+
+#add_tip {
+    border-image: url(:/resource/addtip.png);
+}
+
+#right_tip{
+ border-image: url(:/resource/right_tip.png);
+}
+
+#message_tip{
+  text-align: center;
+  font-family: "Microsoft YaHei";
+  font-size: 12pt;
+}
+
+
 

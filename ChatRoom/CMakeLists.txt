@@ -48,6 +48,8 @@ qt_add_executable(ChatRoom
     statewidget.h statewidget.cpp
     searchlist.h searchlist.cpp
     userdata.h userdata.cpp
+    adduseritem.h adduseritem.cpp adduseritem.ui
+
 )
 
 
