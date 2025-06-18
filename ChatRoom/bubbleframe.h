@@ -3,10 +3,11 @@
 #include <QHBoxLayout>
 #include "global.h"
 
+const int WIDTH_SANJIAO = 8; // 聊天气泡三角形的宽度
+
 class BubbleFrame:public QFrame
 {
     Q_OBJECT
-    const int WIDTH_SANJIAO = 8; // 聊天气泡三角形的宽度
 public:
     BubbleFrame(ChatRole role, QWidget* parent = nullptr);
     void SetMargin(int margin);
@@ -14,7 +15,7 @@ public:
     void SetWidget(QWidget* w);
 
 protected:
-    void paintEvent(QPaintEvent* e);
+    void paintEvent(QPaintEvent* e) override;
 
 private:
     QHBoxLayout* m_pHLayout;

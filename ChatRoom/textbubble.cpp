@@ -64,7 +64,7 @@ void TextBubble::SetPlainText(const QString &text)
         max_width = max_width < txtW ? txtW : max_width;                 //找到最长的那段
     }
     //设置这个气泡的最大宽度 只需要设置一次
-    setMaximumWidth(max_width + doc_margin * 2 + (margin_left + margin_right));        //设置最大宽度
+    setMaximumWidth(max_width + doc_margin * 2 + (margin_left + margin_right) + width_buffer);        //设置最大宽度
 
 }
 

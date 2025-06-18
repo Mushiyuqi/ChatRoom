@@ -1,5 +1,8 @@
 #include "chatpage.h"
 #include "ui_chatpage.h"
+#include "chatitembase.h"
+#include "textbubble.h"
+#include "picturebubble.h"
 #include <QStyleOption>
 #include <QPainter>
 
@@ -34,6 +37,37 @@ void ChatPage::paintEvent(QPaintEvent *event)
 
 void ChatPage::on_send_btn_clicked()
 {
+    auto pTextEdit = ui->chat_edit;
+    ChatRole role = ChatRole::Self;
+    QString userName = QStringLiteral("恋恋风辰");
+    QString userIcon = ":/resource/head_1.jpg";
+
+    const QVector<MsgInfo>& msgList = pTextEdit->getMsgList();
+    for(int i=0; i<msgList.size(); ++i)
+    {
+        QString type = msgList[i].msgFlag;
+        ChatItemBase *pChatItem = new ChatItemBase(role);
+        pChatItem->SetUserName(userName);
+        pChatItem->SetUserIcon(QPixmap(userIcon));
+        QWidget *pBubble = nullptr;
+        if(type == "text")
+        {
+            pBubble = new TextBubble(role, msgList[i].content);
+        }
+        else if(type == "image")
+        {
+            pBubble = new PictureBubble(role, QPixmap(msgList[i].content));
+        }
+        else if(type == "file")
+        {
+
+        }
+        if(pBubble != nullptr)
+        {
+            pChatItem->SetWidget(pBubble);
+            ui->chat_data_list->AppendChatItem(pChatItem);
+        }
+    }
 
 }
 

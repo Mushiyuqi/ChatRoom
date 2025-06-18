@@ -8,6 +8,7 @@ BubbleFrame::BubbleFrame(ChatRole role, QWidget *parent):QFrame(parent), m_role(
     }else{
         m_pHLayout->setContentsMargins(WIDTH_SANJIAO + m_margin, m_margin, m_margin, m_margin);
     }
+    this->setLayout(m_pHLayout);
 }
 
 void BubbleFrame::SetMargin(int margin)

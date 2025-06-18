@@ -1,6 +1,6 @@
 #include "chatitembase.h"
 
-ChatItemBase::ChatItemBase(ChatRole role, QWidget *parent): QWidget(parent)
+ChatItemBase::ChatItemBase(ChatRole role, QWidget *parent): QWidget(parent), m_role(role)
 {
     m_pNameLabel = new QLabel();
     m_pNameLabel->setObjectName("chat_user_name");

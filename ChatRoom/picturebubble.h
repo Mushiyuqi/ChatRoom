@@ -6,7 +6,7 @@
 #define PIC_MAX_WIDTH 100
 #define PIC_MAX_HEIGHT 90
 
-class PictureBubble: BubbleFrame
+class PictureBubble:public BubbleFrame
 {
     Q_OBJECT
 public:
