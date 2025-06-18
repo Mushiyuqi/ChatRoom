@@ -37,5 +37,7 @@
         <file>resource/smile.png</file>
         <file>resource/tipclose.png</file>
         <file>resource/head_0.png</file>
+        <file>resource/add_friend.png</file>
+        <file>resource/red_point.png</file>
     </qresource>
 </RCC>

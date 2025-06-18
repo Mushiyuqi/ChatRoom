@@ -50,7 +50,37 @@ ChatDialog::ChatDialog(QWidget *parent)
     AddChatUserList();
     connect(ui->chat_user_list, &ChatUserList::sig_loading_chat_user,
             this, &ChatDialog::slot_loading_chat_user);
+
+    // 侧边栏添加头像
+    QPixmap pixmap(":/resource/head_0.png"); // 加载图片
+    ui->side_head_lb->setPixmap(pixmap); // 将图片设置到QLabel上
+    QPixmap scaledPixmap = pixmap.scaled( ui->side_head_lb->size(), Qt::KeepAspectRatio); // 将图片缩放到label的大小
+    ui->side_head_lb->setPixmap(scaledPixmap); // 将缩放后的图片设置到QLabel上
+    ui->side_head_lb->setScaledContents(true); // 设置QLabel自动缩放图片内容以适应大小
+
+    // 设置侧边栏行为
+    ui->side_chat_lb->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
+    ui->side_contact_lb->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
+
+    // 将侧边栏按钮添加到按钮组中
+    AddLBGroup(ui->side_chat_lb);
+    AddLBGroup(ui->side_contact_lb);
+
+    // 注册侧边栏事件处理
+    connect(ui->side_chat_lb, &StateWidget::clicked, this, &ChatDialog::slot_side_chat);
+    connect(ui->side_contact_lb, &StateWidget::clicked, this, &ChatDialog::slot_side_contact);
+
+    //链接搜索框输入变化
+    connect(ui->search_edit, &QLineEdit::textChanged, this, &ChatDialog::slot_text_changed);
+
 }
+
+void ChatDialog::AddLBGroup(StateWidget* lb)
+{
+    m_lb_list.push_back(lb);
+}
+
+
 
 ChatDialog::~ChatDialog()
 {
@@ -102,6 +132,17 @@ void ChatDialog::AddChatUserList()
     }
 }
 
+void ChatDialog::ClearLabelState(StateWidget *lb)
+{
+    for(auto & ele: m_lb_list){
+        if(ele == lb){
+            continue;
+        }
+
+        ele->ClearState();
+    }
+}
+
 void ChatDialog::ShowSearch(bool bsearch)
 {
     if(bsearch){
@@ -141,3 +182,29 @@ void ChatDialog::slot_loading_chat_user()
     m_b_loading = false;
 
 }
+
+void ChatDialog::slot_side_chat()
+{
+    qDebug()<< "receive side chat clicked";
+    ClearLabelState(ui->side_chat_lb);
+    ui->stackedWidget->setCurrentWidget(ui->chat_page);
+    m_state = ChatUIMode::ChatMode;
+    ShowSearch(false);
+}
+
+void ChatDialog::slot_side_contact(){
+    qDebug()<< "receive side contact clicked";
+    ClearLabelState(ui->side_contact_lb);
+    //设置
+    ui->stackedWidget->setCurrentWidget(ui->friend_apply_page);
+    m_state = ChatUIMode::ContactMode;
+    ShowSearch(false);
+}
+
+void ChatDialog::slot_text_changed(const QString &str)
+{
+    if (!str.isEmpty()) {
+        ShowSearch(true);
+    }
+}
+

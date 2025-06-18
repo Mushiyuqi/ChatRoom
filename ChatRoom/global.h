@@ -83,5 +83,11 @@ struct MsgInfo{
     QPixmap pixmap;//文件和图片的缩略图
 };
 
+enum ClickLbState{
+    Normal = 0,
+    Selected = 1
+};
+
+
 
 

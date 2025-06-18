@@ -45,6 +45,9 @@ qt_add_executable(ChatRoom
     textbubble.h textbubble.cpp
     picturebubble.h picturebubble.cpp
     messagetextedit.h messagetextedit.cpp
+    statewidget.h statewidget.cpp
+    searchlist.h searchlist.cpp
+    userdata.h userdata.cpp
 )
 
 
