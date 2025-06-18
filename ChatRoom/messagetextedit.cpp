@@ -195,7 +195,8 @@ QStringList MessageTextEdit::getUrl(QString text)
     QStringList list = text.split("\n");
     foreach (QString url, list) {
         if(!url.isEmpty()){
-            QStringList str = url.split("///");
+            // Linux系统为”//“，windows系统可能为”///“
+            QStringList str = url.split("//");
             if(str.size()>=2)
                 urls.append(str.at(1));
         }

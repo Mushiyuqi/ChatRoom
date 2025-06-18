@@ -42,7 +42,7 @@ private:
     bool isImage(QString url);//判断文件是否为图片
     void insertMsgList(QVector<MsgInfo> &list,QString flag, QString text, QPixmap pix);
 
-    QStringList getUrl(QString text);
+    QStringList getUrl(QString text);// 未做系统适配
     QPixmap getFileIconPixmap(const QString &url);//获取文件图标及大小信息，并转化成图片
     QString getFileSize(qint64 size);//获取文件大小
 
