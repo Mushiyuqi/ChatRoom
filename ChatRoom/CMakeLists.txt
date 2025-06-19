@@ -80,6 +80,13 @@ configure_file(
     COPYONLY  # 纯拷贝，不替换变量
 )
 
+# 将head_0.png打包到构建目录方便调试
+configure_file(
+    "${CMAKE_SOURCE_DIR}/static/head_0.png"
+    "${CMAKE_BINARY_DIR}/static/head_0.png"
+    COPYONLY  # 纯拷贝，不替换变量
+)
+
 # GNU 标准安装路径
 include(GNUInstallDirs)
 install(TARGETS ChatRoom
