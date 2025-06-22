@@ -1,14 +1,10 @@
 #pragma once
 #include <QLabel>
+#include "global.h"
 
 class ClickedLabel : public QLabel
 {
     Q_OBJECT
-public:
-    enum ClickState{
-        Normal = 0, // 闭眼
-        Selected = 1, // 睁眼
-    };
 public:
     ClickedLabel(QWidget *parent=nullptr);
     virtual void enterEvent(QEnterEvent *event) override;
@@ -18,6 +14,9 @@ public:
     void SetState(QString normal="", QString hover="", QString press="",
                   QString select="", QString select_hover="", QString select_press="");
     ClickState GetCurState();
+    bool SetCurState(ClickState state);
+    void ResetNormalState();
+
 private:
     QString m_normal;
     QString m_normal_hover;
@@ -30,5 +29,5 @@ private:
     ClickState m_curstate;
 
 signals:
-    void clicked(void);
+    void clicked(QString, ClickState);
 };

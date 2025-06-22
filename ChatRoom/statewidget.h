@@ -12,7 +12,7 @@ public:
     void SetState(QString normal="", QString hover="", QString press="",
                   QString select="", QString select_hover="", QString select_press="");
 
-    ClickLbState GetCurState();
+    ClickState GetCurState();
     void ClearState();
 
     void SetSelected(bool bselected);
@@ -37,7 +37,7 @@ private:
     QString m_selected_hover;
     QString m_selected_press;
 
-    ClickLbState m_curstate;
+    ClickState m_curstate;
     QLabel * m_red_point;
 
 signals:

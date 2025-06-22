@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
-StateWidget::StateWidget(QWidget *parent) : QWidget(parent),m_curstate(ClickLbState::Normal)
+StateWidget::StateWidget(QWidget *parent) : QWidget(parent),m_curstate(ClickState::Normal)
 {
     setCursor(Qt::PointingHandCursor);
     //添加红点
@@ -38,13 +38,13 @@ void StateWidget::SetState(QString normal, QString hover, QString press,
     repolish(this);
 }
 
-ClickLbState StateWidget::GetCurState(){
+ClickState StateWidget::GetCurState(){
     return m_curstate;
 }
 
 void StateWidget::ClearState()
 {
-    m_curstate = ClickLbState::Normal;
+    m_curstate = ClickState::Normal;
     setProperty("state", m_normal);
     repolish(this);
     update();
@@ -53,14 +53,14 @@ void StateWidget::ClearState()
 void StateWidget::SetSelected(bool bselected)
 {
     if(bselected){
-        m_curstate = ClickLbState::Selected;
+        m_curstate = ClickState::Selected;
         setProperty("state", m_selected);
         repolish(this);
         update();
         return;
     }
 
-    m_curstate = ClickLbState::Normal;
+    m_curstate = ClickState::Normal;
     setProperty("state", m_normal);
     repolish(this);
     update();
@@ -84,7 +84,7 @@ void StateWidget::paintEvent(QPaintEvent *event)
 // 处理鼠标点击事件
 void StateWidget::mousePressEvent(QMouseEvent* event)  {
     if (event->button() == Qt::LeftButton) {
-        if(m_curstate == ClickLbState::Selected){
+        if(m_curstate == ClickState::Selected){
             qDebug()<<"PressEvent , already to selected press: "<< m_selected_press;
             //emit clicked();
             // 调用基类的mousePressEvent以保证正常的事件处理
@@ -92,9 +92,9 @@ void StateWidget::mousePressEvent(QMouseEvent* event)  {
             return;
         }
 
-        if(m_curstate == ClickLbState::Normal){
+        if(m_curstate == ClickState::Normal){
             qDebug()<<"PressEvent , change to selected press: "<< m_selected_press;
-            m_curstate = ClickLbState::Selected;
+            m_curstate = ClickState::Selected;
             setProperty("state",m_selected_press);
             repolish(this);
             update();
@@ -109,7 +109,7 @@ void StateWidget::mousePressEvent(QMouseEvent* event)  {
 void StateWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        if(m_curstate == ClickLbState::Normal){
+        if(m_curstate == ClickState::Normal){
             //qDebug()<<"ReleaseEvent , change to normal hover: "<< _normal_hover;
             setProperty("state",m_normal_hover);
             repolish(this);
@@ -131,7 +131,7 @@ void StateWidget::mouseReleaseEvent(QMouseEvent *event)
 void StateWidget::enterEvent(QEnterEvent *event)
 {
     // 在这里处理鼠标悬停进入的逻辑
-    if(m_curstate == ClickLbState::Normal){
+    if(m_curstate == ClickState::Normal){
         //qDebug()<<"enter , change to normal hover: "<< _normal_hover;
         setProperty("state",m_normal_hover);
         repolish(this);
@@ -150,7 +150,7 @@ void StateWidget::enterEvent(QEnterEvent *event)
 void StateWidget::leaveEvent(QEvent *event)
 {
     // 在这里处理鼠标悬停离开的逻辑
-    if(m_curstate == ClickLbState::Normal){
+    if(m_curstate == ClickState::Normal){
         // qDebug()<<"leave , change to normal : "<< _normal;
         setProperty("state",m_normal);
         repolish(this);

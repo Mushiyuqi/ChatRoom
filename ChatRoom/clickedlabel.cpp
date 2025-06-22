@@ -1,5 +1,4 @@
 #include "clickedlabel.h"
-#include "global.h"
 #include <QMouseEvent>
 
 ClickedLabel::ClickedLabel(QWidget *parent):QLabel(parent), m_curstate(ClickState::Normal)
@@ -54,6 +53,7 @@ void ClickedLabel::mousePressEvent(QMouseEvent *ev)
             repolish(this);
             update();
         }
+        return;
     }
     QLabel::mousePressEvent(ev);
 }
@@ -70,7 +70,8 @@ void ClickedLabel::mouseReleaseEvent(QMouseEvent *ev)
             repolish(this);
             update();
         }
-        emit clicked();
+        emit clicked(this->text(), m_curstate);
+        return;
     }
     QLabel::mouseReleaseEvent(ev);
 }
@@ -90,7 +91,30 @@ void ClickedLabel::SetState(QString normal, QString hover, QString press,
     repolish(this);
 }
 
-ClickedLabel::ClickState ClickedLabel::GetCurState()
+bool ClickedLabel::SetCurState(ClickState state)
+{
+    m_curstate = state;
+    if (m_curstate == ClickState::Normal) {
+        setProperty("state", m_normal);
+        repolish(this);
+    }
+    else if (m_curstate == ClickState::Selected) {
+        setProperty("state", m_selected);
+        repolish(this);
+    }
+
+    return true;
+
+}
+
+void ClickedLabel::ResetNormalState()
+{
+    m_curstate = ClickState::Normal;
+    setProperty("state", m_normal);
+    repolish(this);
+}
+
+ClickState ClickedLabel::GetCurState()
 {
     return m_curstate;
 }

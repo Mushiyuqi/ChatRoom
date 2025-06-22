@@ -31,7 +31,7 @@ RegisterDialog::RegisterDialog(QWidget* parent)
     // 连接信号与槽
     connect(ui->pass_visible, &ClickedLabel::clicked, this, [this](){
         auto state = ui->pass_visible->GetCurState();
-        if(state == ClickedLabel::Normal){
+        if(state == ClickState::Normal){
             ui->pass_edit->setEchoMode(QLineEdit::Password);
         }else{
             ui->pass_edit->setEchoMode(QLineEdit::Normal);
@@ -39,7 +39,7 @@ RegisterDialog::RegisterDialog(QWidget* parent)
     });
     connect(ui->confirm_visible, &ClickedLabel::clicked, this, [this](){
         auto state = ui->confirm_visible->GetCurState();
-        if(state == ClickedLabel::Normal){
+        if(state == ClickState::Normal){
             ui->confirm_edit->setEchoMode(QLineEdit::Password);
         }else{
             ui->confirm_edit->setEchoMode(QLineEdit::Normal);

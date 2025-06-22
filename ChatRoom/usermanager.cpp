@@ -20,3 +20,13 @@ void UserManager::SetToken(QString token)
 {
     m_token = token;
 }
+
+int UserManager::GetUid()
+{
+    return m_uid;
+}
+
+QString UserManager::GetName()
+{
+    return m_name;
+}

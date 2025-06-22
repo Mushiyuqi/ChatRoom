@@ -15,6 +15,9 @@ public:
     void SetUid(int uid);
     void SetToken(QString token);
 
+    int GetUid();
+    QString GetName();
+
 private:
     UserManager() = default;
 
