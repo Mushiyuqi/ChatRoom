@@ -56,6 +56,9 @@ qt_add_executable(ChatRoom
     contactuserlist.h contactuserlist.cpp
     contactuseritem.h contactuseritem.cpp contactuseritem.ui
     grouptipitem.h grouptipitem.cpp grouptipitem.ui
+    applyfriendpage.h applyfriendpage.cpp applyfriendpage.ui
+    applyfrienditem.h applyfrienditem.cpp applyfrienditem.ui
+    applyfriendlist.h applyfriendlist.cpp
 
 )
 

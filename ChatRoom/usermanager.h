@@ -1,6 +1,9 @@
 #pragma once
 #include <memory>
 #include <QObject>
+#include "userdata.h"
+#include <vector>
+
 
 class UserManager:public QObject
 {
@@ -18,12 +21,14 @@ public:
     int GetUid();
     QString GetName();
 
+    std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
+
 private:
     UserManager() = default;
 
     QString m_name;
     QString m_token;
     int m_uid;
-
+    std::vector<std::shared_ptr<ApplyInfo>> m_apply_list;
 };
 
