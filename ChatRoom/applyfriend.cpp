@@ -169,12 +169,6 @@ void ApplyFriend::AddLabel(QString name)
     tmplabel->SetText(name);
     tmplabel->setObjectName("FriendLabel");
 
-    // 设置label的宽度
-    // QFontMetrics fontMetrics(tmplabel->font()); // 获取QLabel控件的字体信息
-    // int textWidth = fontMetrics.horizontalAdvance(tmplabel->Text()); // 获取文本的宽度
-    // int labelWidth = textWidth + tmplabel->GetIconWidth();
-    // tmplabel->setFixedWidth(labelWidth+15);
-
     auto max_width = ui->gridWidget->width();
     // todo... 添加宽度统计
     if (m_label_point.x() + tmplabel->width() > max_width) {

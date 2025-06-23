@@ -82,12 +82,18 @@ background: qlineargradient(
 }
 
 #chat_user_wid{
-    background-color:rgb(247,247,248);
+    background-color:rgb(247,247,247);
 }
 
 #chat_user_list{
-    background-color:rgb(247,247,248);
+    background-color:rgb(247,247,247);
     border: none;
+}
+
+#chat_user_list::item:selected {
+    background-color: #d3d7d4;
+    border: none;
+    outline: none;
 }
 
 #chat_user_list::item:hover{
@@ -99,11 +105,6 @@ background: qlineargradient(
 #chat_user_list::focus{
     border: none;
     outline: none;
-}
-
-ChatUserItem {
-    background-color:rgb(247,247,247);
-    border: none;
 }
 
 #user_chat_lb{
