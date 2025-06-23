@@ -35,6 +35,14 @@ add_executable(ChatServer main.cpp
         RedisConnPool.h
         RedisManager.cpp
         RedisManager.h
+        ChatGrpcClient.cpp
+        ChatGrpcClient.h
+        data.h
+        UserManager.cpp
+        UserManager.h
+        ChatServiceImpl.cpp
+        ChatServiceImpl.cpp
+        ChatServiceImpl.h
 )
 
 # 将config.ini打包到构建目录方便调试

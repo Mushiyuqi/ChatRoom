@@ -27,6 +27,9 @@ add_executable(StatusServer
         message.grpc.pb.h
         message.pb.cc
         message.pb.h
+        ChatGrpcClient.cpp
+        ChatGrpcClient.h
+        GRPCConnPool.hpp
 )
 
 # 将config.ini打包到构建目录方便调试
