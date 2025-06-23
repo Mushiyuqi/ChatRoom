@@ -4,7 +4,9 @@
 
 class SearchInfo {
 public:
-    SearchInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon);
+    SearchInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon = "")
+        :m_uid(uid),m_name(name), m_nick(nick),m_desc(desc),m_sex(sex), m_icon(icon)
+    {}
     int m_uid;
     QString m_name;
     QString m_nick;
@@ -15,17 +17,17 @@ public:
 
 class AddFriendApply {
 public:
-    AddFriendApply(int from_uid, QString name, QString desc);
+    AddFriendApply(int from_uid, QString name, QString desc)
+        :m_from_uid(from_uid),m_name(name),m_desc(desc)
+    {}
     int m_from_uid;
     QString m_name;
     QString m_desc;
 };
 
 struct ApplyInfo {
-    ApplyInfo(int uid, QString name, QString desc,
-              QString icon, QString nick, int sex, int status)
-        :m_uid(uid),m_name(name),m_desc(desc),
-        m_icon(icon),m_nick(nick),m_sex(sex),m_status(status){}
+    ApplyInfo(int uid, QString name, QString desc, QString icon, QString nick, int sex, int status)
+    :m_uid(uid),m_name(name),m_desc(desc), m_icon(icon),m_nick(nick),m_sex(sex),m_status(status){}
 
     void SetIcon(QString head){
         m_icon = head;

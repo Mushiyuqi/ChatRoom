@@ -9,7 +9,7 @@ namespace Ui {
 class ContactUserItem;
 }
 
-class ContactUserItem : public QWidget
+class ContactUserItem : public ListItemBase
 {
     Q_OBJECT
 
@@ -25,7 +25,7 @@ public:
 
 private:
     Ui::ContactUserItem *ui;
-    std::shared_ptr<UserInfo> _info;
+    std::shared_ptr<UserInfo> m_info;
 };
 
 #endif // CONTACTUSERITEM_H

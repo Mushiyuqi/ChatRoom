@@ -1,12 +1,9 @@
 #pragma once
 #include <QTcpSocket>
 #include <QObject>
+#include <QJsonArray>
 #include "global.h"
-
-class SearchInfo;
-class AddFriendApply;
-class AuthInfo;
-class AuthRsp;
+#include "userdata.h"
 
 class TcpManager:public QObject
 {

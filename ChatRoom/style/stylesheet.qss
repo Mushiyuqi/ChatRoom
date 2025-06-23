@@ -566,4 +566,48 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     border-radius: 20px; /* 设置圆角 */
 }
 
+#con_user_list {
+    background-color: rgb(247,247,248);
+    border: none;
+}
+
+#con_user_list::item:selected {
+    background-color: #d3d7d4;
+    border: none;
+    outline: none;
+}
+
+#con_user_list::item:hover {
+    background-color: rgb(206,207,208);
+    border: none;
+    outline: none;
+}
+
+#con_user_list::focus {
+    border: none;
+    outline: none;
+}
+
+#GroupTipItem {
+    background-color: #eaeaea;
+    border: none;
+}
+
+#GroupTipItem QLabel{
+    color: #2e2f30;
+    font-size: 12px; /* 设置字体大小 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    border: none;
+}
+
+#new_friend_item {
+     border-bottom: 1px solid #eaeaea;
+}
+
+#LineItem {
+    background-color:rgb(247,247,247);
+    border: none;
+}
+
+
 

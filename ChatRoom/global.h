@@ -68,6 +68,9 @@ enum ListItemType{
     Search_User_Item, //搜索到的用户
     AddUser_Tip_Item, //提示添加用户
     Invalid_Item,  //不可点击条目
+    Group_Tip_Item,
+    Line_Item,
+    Apply_Friend_Item,
 };
 
 
@@ -94,6 +97,36 @@ const int MIN_APPLY_LABEL_ED_LEN = 40;
 const QString add_prefix = "添加标签 ";
 
 const int  tip_offset = 5;
+
+
+// 测试数据
+const std::vector<QString>  strs ={"hello world !",
+                                   "nice to meet u",
+                                   "New year，new life",
+                                   "You have to love yourself",
+                                   "My love is written in the wind ever since the whole world is you"};
+
+const std::vector<QString> heads = {
+    ":/resource/head_1.jpg",
+    ":/resource/head_2.jpg",
+    ":/resource/head_3.jpg",
+    ":/resource/head_4.jpg",
+    ":/resource/head_5.jpg"
+};
+
+const std::vector<QString> names = {
+    "HanMeiMei",
+    "Lily",
+    "Ben",
+    "Androw",
+    "Max",
+    "Summer",
+    "Candy",
+    "Hunter"
+};
+
+const int CHAT_COUNT_PER_PAGE = 13;
+
 
 
 
