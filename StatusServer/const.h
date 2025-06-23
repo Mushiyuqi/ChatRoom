@@ -28,7 +28,12 @@ extern "C" {
 #define RedisPoolSize 5
 #define GRPCPoolSize 6
 #define MysqlPoolSize 5
-#define CodePrefix "code_"
+#define USERIPPREFIX  "uip_"
+#define USERTOKENPREFIX  "utoken_"
+#define IPCOUNTPREFIX  "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT  "logincount"
+
 
 namespace beast = boost::beast; // from <boost/beast.hpp>
 namespace http = beast::http; // from <boost/beast/http.hpp>
