@@ -62,6 +62,7 @@ using message::StatusService;
 #define LOGIN_COUNT  "logincount"
 #define NAME_INFO  "nameinfo_"
 
+
 // Tcp服务器需要的宏
 #pragma once
 #define MAX_MSG_LENGTH (1024*2)

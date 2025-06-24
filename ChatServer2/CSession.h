@@ -24,7 +24,9 @@ public:
     CSession(boost::asio::io_context& io_context, CServer* server);
     ~CSession();
     boost::asio::ip::tcp::socket& GetSocket();
-    std::string& GetUUID();
+    std::string& GetSessionId();
+    void SetUserId(int uid);
+    int GetUserId();
     void Start();
     void Close();
     // 采用回调函数的形式来处理随机发送
@@ -45,12 +47,13 @@ private:
     boost::asio::io_context& _io_context;
     boost::asio::ip::tcp::socket m_socket;
     CServer* _server;
-    std::string m_uuid;
+    std::string m_session_id;
     bool m_flag_close;
     std::mutex m_send_lock;
     std::queue<std::shared_ptr<SendNode>> m_send_que;
     std::shared_ptr<RecvNode> m_recv_msg_node;
     std::shared_ptr<MsgNode> m_recv_head_node;
+    int m_user_id;
 };
 
 class LogicSystem;

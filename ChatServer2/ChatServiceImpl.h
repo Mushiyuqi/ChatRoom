@@ -34,7 +34,7 @@ public:
     Status NotifyTextChatMsg(::grpc::ServerContext* context,
         const TextChatMsgReq* request, TextChatMsgRsp* response) override;
 
-    bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Data::UserInfo>& userinfo);
+    bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo);
 
 private:
 };

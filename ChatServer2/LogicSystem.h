@@ -22,13 +22,13 @@ private:
     LogicSystem();
     void DealMsg();
     void RegisterCallBacks();
+    bool GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo> &userInfo);
+
     std::thread m_worker_thread;
     std::queue<std::shared_ptr<LogicNode>> m_msg_que;
     std::mutex m_mutex;
     std::condition_variable m_cond;
     bool m_is_stop;
     std::map<short, FunCallBack> m_fun_callbacks;
-    // 缓存用户信息
-    std::unordered_map<int, std::shared_ptr<UserInfo>> m_users;
 };
 

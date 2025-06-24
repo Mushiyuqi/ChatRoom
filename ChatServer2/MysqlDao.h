@@ -1,12 +1,6 @@
 #pragma once
 #include "const.h"
-
-struct UserInfo {
-    std::string name;
-    std::string pwd;
-    int uid;
-    std::string email;
-};
+#include "data.h"
 
 class MySqlPool;
 class MysqlDao
