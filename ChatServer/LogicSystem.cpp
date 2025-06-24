@@ -3,6 +3,7 @@
 #include "MysqlManager.h"
 #include "RedisManager.h"
 #include "ConfigManager.h"
+#include "UserManager.h"
 
 LogicSystem::LogicSystem(): m_is_stop(false) {
     // 注册回调函数
@@ -156,6 +157,13 @@ void LogicSystem::RegisterCallBacks() {
 
             // 将session绑定用户
             session->SetUserId(uid);
+
+            // 为用户设置登陆ip server名字
+            std::string ipKey = USERIPPREFIX + uidStr;
+            RedisManager::GetInstance().Set(ipKey, serverName);
+
+            // 绑定uid与session
+            UserManager::GetInstance().SetUserSession(uid, session);
         };
 }
 

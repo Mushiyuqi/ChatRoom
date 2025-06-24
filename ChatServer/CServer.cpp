@@ -1,6 +1,7 @@
 #include "CServer.h"
 #include "IOContextPool.h"
 #include <iostream>
+#include "UserManager.h"
 
 CServer::CServer(boost::asio::io_context& io_context, const short port):
     _io_context(io_context), m_acceptor(_io_context, tcp::endpoint(tcp::v4(), port)), m_port(port) {
@@ -16,9 +17,14 @@ CServer::~CServer() {
     std::cerr << "CServer::~CServer()" << std::endl;
 }
 
-void CServer::ClearSession(std::string uuid) {
+void CServer::ClearSession(std::string sessionId) {
+    if(m_sessions.contains(sessionId)) {
+        // 移除用户与session的关联
+        UserManager::GetInstance().RemoveUserSession(m_sessions[sessionId]->GetUserId());
+    }
+
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_sessions.erase(uuid);
+    m_sessions.erase(sessionId);
 }
 
 void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::system::error_code& error) {
