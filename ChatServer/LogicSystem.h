@@ -24,6 +24,10 @@ private:
     void RegisterCallBacks();
     bool GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo> &userInfo);
 
+    static bool IsPureDigit(const std::string& str);
+    void GetUserByUid(const std::string& uid_str, Json::Value& user_info);
+    void GetUserByName(const std::string& name, Json::Value& user_info);
+
     std::thread m_worker_thread;
     std::queue<std::shared_ptr<LogicNode>> m_msg_que;
     std::mutex m_mutex;

@@ -169,44 +169,28 @@ void LogicSystem::RegisterCallBacks() {
 
     m_fun_callbacks[ReqId::ID_SEARCH_USER] =
         [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
+            // 注册返回函数
+            Json::Value returnJson;
+            returnJson["error"] = ErrorCodes::Success;
+            Defer defer([this, &returnJson, session]() {
+                const std::string rspStr = returnJson.toStyledString();
+                session->Send(rspStr, ReqId::ID_SEARCH_USER);
+            });
+
             // 处理Json数据
             Json::Reader reader;
             Json::Value value;
             reader.parse(msg_data, value);
             // 获取数据
             auto uid = value["uid"].asString();
+            std::cout << "LogicSystem::ID_SEARCH_USER recv msg is : " << uid << std::endl;
 
-            std::cout << "LogicSystem::ID_SEARCH_USER recv msg id is : " << uid << std::endl;
-
-            // 注册返回函数
-            Json::Value rspJson;
-            Defer defer([this, &rspJson, session]() {
-                const std::string rspStr = rspJson.toStyledString();
-                session->Send(rspStr, ReqId::ID_SEARCH_USER);
-            });
-            rspJson["error"] = ErrorCodes::Success;
-
-
-            // 获取基础信息
-            std::string uidStr = std::to_string(uid);
-            std::string baseKey = USER_BASE_INFO + uidStr;
-            auto userInfo = std::make_shared<UserInfo>();
-            bool flag = GetBaseInfo(baseKey, uid, userInfo);
-            if (!flag) {
-                rspJson["error"] = ErrorCodes::UidInvalid;
-                return;
+            if(IsPureDigit(uid)) {
+                GetUserByUid(uid, returnJson);
+            }else {
+                GetUserByName(uid, returnJson);
             }
-
-            rspJson["uid"] = uid;
-            rspJson["pwd"] = userInfo->pwd;
-            rspJson["name"] = userInfo->name;
-            rspJson["email"] = userInfo->email;
-            rspJson["nick"] = userInfo->nick;
-            rspJson["desc"] = userInfo->desc;
-            rspJson["sex"] = userInfo->sex;
-            rspJson["icon"] = userInfo->icon;
-
-        };
+    };
 }
 
 bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo>& userInfo) {
@@ -244,5 +228,91 @@ bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_p
     root["icon"] = userInfo->icon;
     RedisManager::GetInstance().Set(baseKey, root.toStyledString());
     return true;
+}
+
+bool LogicSystem::IsPureDigit(const std::string& str) {
+    for(auto& ch : str) {
+        if(!std::isdigit(ch))
+            return false;
+    }
+    return true;
+}
+
+void LogicSystem::GetUserByUid(const std::string& uid_str, Json::Value& user_info) {
+    user_info["error"] = ErrorCodes::Success;
+    std::string base_key = USER_BASE_INFO + uid_str;
+    // 优先在Redis中获取
+    std::string info_str;
+    bool flag = RedisManager::GetInstance().Get(base_key, info_str);
+    if(flag) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(info_str, root);
+        user_info["uid"] = root["uid"].asInt();
+        user_info["name"] = root["name"].asString();
+        user_info["pwd"] = root["pwd"].asString();
+        user_info["email"] = root["email"].asString();
+        user_info["nick"] = root["nick"].asString();
+        user_info["desc"] = root["desc"].asString();
+        user_info["sex"] = root["sex"].asInt();
+        user_info["icon"] = root["icon"].asString();
+        return;
+    }
+
+    // Redis中没有，则从Mysql中获取
+    std::shared_ptr<UserInfo> tmp = MysqlManager::GetInstance().GetUser(std::stoi(uid_str));
+    if(tmp == nullptr) {
+        user_info["error"] = ErrorCodes::UidInvalid;
+        return;
+    }
+    user_info["uid"] = tmp->uid;
+    user_info["name"] = tmp->name;
+    user_info["pwd"] = tmp->pwd;
+    user_info["email"] = tmp->email;
+    user_info["nick"] = tmp->nick;
+    user_info["desc"] = tmp->desc;
+    user_info["sex"] = tmp->sex;
+    user_info["icon"] = tmp->icon;
+    // 缓存到Redis中
+    RedisManager::GetInstance().Set(base_key, user_info.toStyledString());
+}
+
+void LogicSystem::GetUserByName(const std::string& name, Json::Value& user_info) {
+    user_info["error"] = ErrorCodes::Success;
+    std::string base_key = NAME_INFO + name;
+
+    // 优先在Redis中获取
+    std::string info_str;
+    bool flag = RedisManager::GetInstance().Get(base_key, info_str);
+    if(flag) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(info_str, root);
+        user_info["uid"] = root["uid"].asInt();
+        user_info["name"] = root["name"].asString();
+        user_info["pwd"] = root["pwd"].asString();
+        user_info["email"] = root["email"].asString();
+        user_info["nick"] = root["nick"].asString();
+        user_info["desc"] = root["desc"].asString();
+        user_info["sex"] = root["sex"].asInt();
+        user_info["icon"] = root["icon"].asString();
+        return;
+    }
+
+    // Redis中没有，则从Mysql中获取
+    std::shared_ptr<UserInfo> tmp = MysqlManager::GetInstance().GetUser(name);
+    if(tmp == nullptr) {
+        user_info["error"] = ErrorCodes::UidInvalid;
+        return;
+    }
+    user_info["uid"] = tmp->uid;
+    user_info["name"] = tmp->name;
+    user_info["pwd"] = tmp->pwd;
+    user_info["email"] = tmp->email;
+    user_info["nick"] = tmp->nick;
+    user_info["desc"] = tmp->desc;
+    user_info["sex"] = tmp->sex;
+    user_info["icon"] = tmp->icon;
+    RedisManager::GetInstance().Set(base_key, user_info.toStyledString());
 }
 
