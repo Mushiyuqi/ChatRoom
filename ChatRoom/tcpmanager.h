@@ -32,14 +32,14 @@ private:
 public slots:
     void slot_tcp_connect(ServerInfo);
     void slot_tcp_disconnect();
-    void slot_tcp_send_data(ReqId reqId, QString data);
+    void slot_send_data(ReqId reqId, QByteArray dataBytes);
 signals:
     void sig_con_success(bool b_success);
     void sig_login_failed(int);
     void sig_switch_chatdlg();
     void sig_user_search(std::shared_ptr<SearchInfo>);
 
-    void sig_send_data(ReqId reqId, QString data);
+    void sig_send_data(ReqId reqId, QByteArray dataBytes);
     void sig_swich_chatdlg();
     void sig_load_apply_list(QJsonArray json_array);
     void sig_friend_apply(std::shared_ptr<AddFriendApply>);

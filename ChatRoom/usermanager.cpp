@@ -21,6 +21,11 @@ void UserManager::SetToken(QString token)
     m_token = token;
 }
 
+bool UserManager::CheckFriendById(int uid)
+{
+
+}
+
 int UserManager::GetUid()
 {
     return m_uid;

@@ -58,7 +58,7 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
             m_b_recv_pending = false;
 
             qDebug() << "TcpManager: receive body msg is " << messageBody ;
-            HandleMsg(ReqId(m_message_id),m_message_len, messageBody);
+            HandleMsg(ReqId(m_message_id), m_message_len, messageBody);
         }
     });
 
@@ -96,6 +96,9 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
     QObject::connect(&m_socket, &QTcpSocket::disconnected, [&](){
         qDebug() << "TcpManager Disconnected from server.";
     });
+
+    //连接发送信号用来发送数据
+    QObject::connect(this, &TcpManager::sig_send_data, this, &TcpManager::slot_send_data);
 
     // 注册消息
     InitHandlers();
@@ -140,6 +143,37 @@ void TcpManager::InitHandlers()
         qDebug() << "登陆成功";
         emit sig_switch_chatdlg();
     });
+
+    m_handlers.insert(ReqId::ID_SEARCH_USER, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            emit sig_user_search(nullptr);
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            emit sig_user_search(nullptr);
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            emit sig_user_search(nullptr);
+            return;
+        }
+
+        auto searchInfo =  std::make_shared<SearchInfo>(
+            jsonObj["uid"].toInt(), jsonObj["name"].toString(),
+            jsonObj["nick"].toString(), jsonObj["desc"].toString(),
+            jsonObj["sex"].toInt(), jsonObj["icon"].toString());
+
+        emit sig_user_search(searchInfo);
+    });
 }
 
 void TcpManager::HandleMsg(ReqId id, int len, QByteArray data)
@@ -164,15 +198,12 @@ void TcpManager::slot_tcp_disconnect(){
     m_socket.disconnectFromHost();
 }
 
-void TcpManager::slot_tcp_send_data(ReqId reqId, QString data)
+void TcpManager::slot_send_data(ReqId reqId, QByteArray dataBytes)
 {
     uint16_t id = reqId;
 
-    // 将字符串转换为UTF-8编码的字节数组
-    QByteArray dataBytes = data.toUtf8();
-
     // 计算长度（使用网络字节序转换）
-    quint16 len = static_cast<quint16>(data.size());
+    quint16 len = static_cast<quint16>(dataBytes.size());
 
     // 创建一个QByteArray用于存储要发送的所有数据
     QByteArray block;

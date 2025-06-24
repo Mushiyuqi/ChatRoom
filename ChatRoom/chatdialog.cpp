@@ -83,6 +83,9 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     // 设置聊天按钮为选中状态
     ui->side_chat_lb->SetSelected(true);
+
+    //为searchlist 设置search edit
+    ui->search_list->SetSearchEdit(ui->search_edit);
 }
 
 void ChatDialog::AddLBGroup(StateWidget* lb)

@@ -18,6 +18,8 @@ public:
     void SetUid(int uid);
     void SetToken(QString token);
 
+    bool CheckFriendById(int uid);
+
     int GetUid();
     QString GetName();
 

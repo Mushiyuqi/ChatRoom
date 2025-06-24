@@ -59,6 +59,7 @@ qt_add_executable(ChatRoom
     applyfriendpage.h applyfriendpage.cpp applyfriendpage.ui
     applyfrienditem.h applyfrienditem.cpp applyfrienditem.ui
     applyfriendlist.h applyfriendlist.cpp
+    findfaildlg.h findfaildlg.cpp findfaildlg.ui
 
 )
 

@@ -34,9 +34,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // 连接tcp管理者发出的登陆失败信号
     connect(&(TcpManager::GetInstance()), &TcpManager::sig_login_failed,
             this, &LoginDialog::slot_login_failed);
-    // 连接tcp管理者请求发送数据的信号
-    connect(this, &LoginDialog::sig_tcp_send_data,
-            &(TcpManager::GetInstance()), &TcpManager::slot_tcp_send_data);
 }
 
 LoginDialog::~LoginDialog()
@@ -250,10 +247,10 @@ void LoginDialog::slot_tcp_con_finish(bool state)
         jsonObj["token"] = m_tmp_info.Token;
 
         QJsonDocument jsonDoc(jsonObj);
-        QString jsonString = jsonDoc.toJson();
+        QByteArray jsonString = jsonDoc.toJson();
 
         //发送tcp请求给chat server
-        emit sig_tcp_send_data(ReqId::ID_CHAT_LOGIN, jsonString);
+        emit TcpManager::GetInstance().sig_send_data(ReqId::ID_CHAT_LOGIN, jsonString);
     }else{
         ShowTip(tr("网络异常......"), false);
         EnableBtn(true);

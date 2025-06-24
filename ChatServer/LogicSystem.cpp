@@ -166,6 +166,47 @@ void LogicSystem::RegisterCallBacks() {
             // 绑定uid与session
             UserManager::GetInstance().SetUserSession(uid, session);
         };
+
+    m_fun_callbacks[ReqId::ID_SEARCH_USER] =
+        [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
+            // 处理Json数据
+            Json::Reader reader;
+            Json::Value value;
+            reader.parse(msg_data, value);
+            // 获取数据
+            int uid = value["uid"].asInt();
+
+            std::cout << "LogicSystem::ID_SEARCH_USER recv msg id is : " << uid << std::endl;
+
+            // 注册返回函数
+            Json::Value rspJson;
+            Defer defer([this, &rspJson, session]() {
+                const std::string rspStr = rspJson.toStyledString();
+                session->Send(rspStr, ReqId::ID_SEARCH_USER);
+            });
+            rspJson["error"] = ErrorCodes::Success;
+
+
+            // 获取基础信息
+            std::string uidStr = std::to_string(uid);
+            std::string baseKey = USER_BASE_INFO + uidStr;
+            auto userInfo = std::make_shared<UserInfo>();
+            bool flag = GetBaseInfo(baseKey, uid, userInfo);
+            if (!flag) {
+                rspJson["error"] = ErrorCodes::UidInvalid;
+                return;
+            }
+
+            rspJson["uid"] = uid;
+            rspJson["pwd"] = userInfo->pwd;
+            rspJson["name"] = userInfo->name;
+            rspJson["email"] = userInfo->email;
+            rspJson["nick"] = userInfo->nick;
+            rspJson["desc"] = userInfo->desc;
+            rspJson["sex"] = userInfo->sex;
+            rspJson["icon"] = userInfo->icon;
+
+    };
 }
 
 bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo>& userInfo) {

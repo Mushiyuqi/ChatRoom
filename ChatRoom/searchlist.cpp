@@ -3,8 +3,12 @@
 #include "adduseritem.h"
 #include <tcpmanager.h>
 #include <findsuccessdlg.h>
+#include "customizeedit.h"
+#include "usermanager.h"
+#include "findfaildlg.h"
 
-SearchList::SearchList(QWidget *parent):QListWidget(parent),m_find_dlg(nullptr), m_search_edit(nullptr), m_send_pending(false)
+SearchList::SearchList(QWidget *parent)
+    :QListWidget(parent),m_find_dlg(nullptr), m_search_edit(nullptr), m_send_pending(false)
 {
     Q_UNUSED(parent);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -16,7 +20,8 @@ SearchList::SearchList(QWidget *parent):QListWidget(parent),m_find_dlg(nullptr),
     //添加条目
     AddTipItem();
     //连接搜索条目
-    connect(&TcpManager::GetInstance(), &TcpManager::sig_user_search, this, &SearchList::slot_user_search);
+    connect(&TcpManager::GetInstance(), &TcpManager::sig_user_search,
+            this, &SearchList::slot_user_search);
 }
 
 void SearchList::CloseFindDlg()
@@ -29,7 +34,7 @@ void SearchList::CloseFindDlg()
 
 void SearchList::SetSearchEdit(QWidget *edit)
 {
-
+    m_search_edit = edit;
 }
 
 
@@ -63,7 +68,16 @@ bool SearchList::eventFilter(QObject *watched, QEvent *event)
 
 void SearchList::WaitPending(bool pending)
 {
-
+    if(pending){
+        m_loadingDialog = new LoadingDlg(this);
+        m_loadingDialog->setModal(true);
+        m_loadingDialog->show();
+        m_send_pending = pending;
+    }else{
+        m_loadingDialog->hide();
+        m_loadingDialog->deleteLater();
+        m_send_pending = pending;
+    }
 }
 
 void SearchList::AddTipItem()
@@ -109,11 +123,23 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
     }
 
     if(itemType == ListItemType::AddUser_Tip_Item){
-        // todo
-        m_find_dlg = std::make_shared<FindSuccessDlg>(this);
-        m_find_dlg->show();
-        auto si = std::make_shared<SearchInfo>(0, "test", "test", "test", 0);
-        std::dynamic_pointer_cast<FindSuccessDlg>(m_find_dlg)->SetSearchInfo(si);
+        if(m_send_pending) return;
+
+        if(m_search_edit == nullptr) return;
+
+        // 等待发送请求, 添加蒙板
+        WaitPending(true);
+
+        auto search_edit = dynamic_cast<CustomizeEdit*>(m_search_edit);
+        auto uid_str = search_edit->text(); //用户输入信息可能是uid或者name
+        //此处发送请求给server
+        QJsonObject jsonObj;
+        jsonObj["uid"] = uid_str;
+        QJsonDocument doc(jsonObj);
+        QByteArray jsonStr = doc.toJson(QJsonDocument::Compact);
+
+        //发送tcp请求给chat server
+        emit TcpManager::GetInstance().sig_send_data(ReqId::ID_SEARCH_USER, jsonStr);
         return;
     }
 
@@ -123,5 +149,13 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
 
 void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
 {
-
+    WaitPending(false);
+    if (si == nullptr) {
+        m_find_dlg = std::make_shared<FindFailDlg>(this);
+    }else{
+        // todo 此处分两种情况，一种是搜多到已经是自己的朋友了，一种是未添加好友
+        m_find_dlg = std::make_shared<FindSuccessDlg>(this);
+        std::dynamic_pointer_cast<FindSuccessDlg>(m_find_dlg)->SetSearchInfo(si);
+    }
+    m_find_dlg->show();
 }

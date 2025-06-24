@@ -49,7 +49,6 @@ signals:
     void switchReset();
     void sig_connect_tcp(ServerInfo si);
     void sig_disconnect_tcp();
-    void sig_tcp_send_data(ReqId reqId, QString data);
 
 private slots:
     void slot_forget_pwd();

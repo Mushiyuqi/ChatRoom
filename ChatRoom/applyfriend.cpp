@@ -486,6 +486,31 @@ void ApplyFriend::SlotAddFirendLabelByClickTip(QString text)
 void ApplyFriend::SlotApplySure()
 {
     qDebug()<<"Slot Apply Sure called" ;
+    // 发送请求逻辑
+    QJsonObject jsonObj;
+    auto uid = UserManager::GetInstance().GetUid();
+    jsonObj["uid"] = uid;
+    // 获取name 用作提示对方知道我是谁
+    auto name = ui->name_ed->text();
+    if(name.isEmpty()){
+        name = ui->name_ed->placeholderText();
+    }
+    jsonObj["applyname"] = name;
+    // 获取backname
+    auto backname = ui->back_ed->text();
+    if(backname.isEmpty()){
+        backname = ui->back_ed->placeholderText();
+    }
+    jsonObj["backname"] = backname;
+    // 获取touid
+    jsonObj["touid"] = m_si->m_uid;
+
+    QJsonDocument doc(jsonObj);
+    QByteArray jsonData = doc.toJson();
+
+    // 发送tcp请求
+    emit TcpManager::GetInstance().sig_send_data(ReqId::ID_ADD_FRIEND, jsonData);
+
     this->hide();
     deleteLater();
 }

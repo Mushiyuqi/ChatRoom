@@ -33,6 +33,13 @@ enum ReqId{
     ID_RESET_PWD = 1003, //重置密码
     ID_LOGIN_USER = 1004, //用户登录
     ID_CHAT_LOGIN = 1005, //登陆聊天服务器
+    ID_SEARCH_USER = 1006, //用户搜索请求
+    ID_ADD_FRIEND = 1007,  //添加好友申请
+    ID_NOTIFY_ADD_FRIEND = 1008,  //通知用户添加好友申请
+    ID_AUTH_FRIEND = 1009,  //认证好友请求
+    ID_NOTIFY_AUTH_FRIEND = 1010, //通知用户认证好友申请
+    ID_TEXT_CHAT_MSG  = 1011,  //文本聊天信息请求
+    ID_NOTIFY_TEXT_CHAT_MSG = 1012, //通知用户文本聊天信息
 };
 
 enum Modules{
