@@ -1,6 +1,8 @@
 #include "LogicSystem.h"
 #include "StatusGrpcClient.h"
 #include "MysqlManager.h"
+#include "RedisManager.h"
+#include "ConfigManager.h"
 
 LogicSystem::LogicSystem(): m_is_stop(false) {
     // 注册回调函数
@@ -103,32 +105,94 @@ void LogicSystem::RegisterCallBacks() {
                 const std::string rspStr = rspJson.toStyledString();
                 session->Send(rspStr, ReqId::ID_CHAT_LOGIN);
             });
+            rspJson["error"] = ErrorCodes::Success;
 
             // 从状态服务器获取Token进行匹配
-            auto rspRpc = StatusGrpcClient::GetInstance().Login(uid, token);
-            rspJson["error"] = rspRpc.error();
-            if (rspRpc.error() != ErrorCodes::Success) {
+            std::string uidStr = std::to_string(uid);
+            std::string tokenKey = USERTOKENPREFIX + uidStr;
+            std::string tokenValue;
+            bool success = RedisManager::GetInstance().Get(tokenKey, tokenValue);
+            if (!success) {
+                rspJson["error"] = ErrorCodes::UidInvalid;
+                return;
+            }
+            if (tokenValue != token) {
+                rspJson["error"] = ErrorCodes::TokenInvalid;
                 return;
             }
 
-            std::shared_ptr<UserInfo> userInfo = nullptr;
-            // 从内存中查询用户信息
-            if (!m_users.contains(uid)) {
-                // 从数据库中查询用户信息
-                userInfo = MysqlManager::GetInstance().GetUser(uid);
-                if (userInfo == nullptr) {
-                    rspJson["error"] = ErrorCodes::UidInvalid;
-                    return;
-                }
-                m_users[uid] = userInfo;
-            }
-            else {
-                userInfo = m_users[uid];
+            std::string baseKey = USER_BASE_INFO + uidStr;
+            auto userInfo = std::make_shared<UserInfo>();
+            bool flag = GetBaseInfo(baseKey, uid, userInfo);
+            if (!flag) {
+                rspJson["error"] = ErrorCodes::UidInvalid;
+                return;
             }
 
             rspJson["uid"] = uid;
-            rspJson["token"] = token;
+            rspJson["pwd"] = userInfo->pwd;
             rspJson["name"] = userInfo->name;
+            rspJson["email"] = userInfo->email;
+            rspJson["nick"] = userInfo->nick;
+            rspJson["desc"] = userInfo->desc;
+            rspJson["sex"] = userInfo->sex;
+            rspJson["icon"] = userInfo->icon;
+
+            // todo 从数据库获取申请列表
+
+            // todo 获取好友列表
+
+            // 将登陆数量增加
+            auto serverName = ConfigManager::GetInstance()["SelfServer"]["Name"];
+            std::string tmp;
+            RedisManager::GetInstance().HGet(LOGIN_COUNT, serverName, tmp);
+            int count = 0;
+            if(!tmp.empty()) {
+                count = std::stoi(tmp);
+            }
+            ++count;
+            auto countStr = std::to_string(count);
+            RedisManager::GetInstance().HSet(LOGIN_COUNT, serverName, countStr);
+
+            // 将session绑定用户
+            session->SetUserId(uid);
         };
+}
+
+bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo>& userInfo) {
+    // 优先在Redis中获取
+    std::string infoStr;
+    bool flag = RedisManager::GetInstance().Get(baseKey, infoStr);
+    if(flag) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(infoStr, root);
+        userInfo->uid = root["uid"].asInt();
+        userInfo->name = root["name"].asString();
+        userInfo->pwd = root["pwd"].asString();
+        userInfo->email = root["email"].asString();
+        userInfo->nick = root["nick"].asString();
+        userInfo->desc = root["desc"].asString();
+        userInfo->sex = root["sex"].asInt();
+        userInfo->icon = root["icon"].asString();
+        return true;
+    }
+    // Redis中没有，则从Mysql中获取
+    std::shared_ptr<UserInfo> tmp = MysqlManager::GetInstance().GetUser(uid);
+    if(tmp == nullptr) return false;
+    userInfo = tmp;
+
+    // 缓存到Redis中
+    Json::Value root;
+    root["uid"] = userInfo->uid;
+    root["name"] = userInfo->name;
+    root["pwd"] = userInfo->pwd;
+    root["email"] = userInfo->email;
+    root["nick"] = userInfo->nick;
+    root["desc"] = userInfo->desc;
+    root["sex"] = userInfo->sex;
+    root["icon"] = userInfo->icon;
+    RedisManager::GetInstance().Set(baseKey, root.toStyledString());
+    return true;
 }
 

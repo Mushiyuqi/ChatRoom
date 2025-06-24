@@ -23,6 +23,6 @@ Status ChatServiceImpl::NotifyTextChatMsg(grpc::ServerContext* context, const Te
     return Status::OK;
 }
 
-bool ChatServiceImpl::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Data::UserInfo>& userinfo) {
+bool ChatServiceImpl::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo) {
     return true;
 }

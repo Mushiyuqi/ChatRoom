@@ -9,19 +9,19 @@
 CSession::CSession(boost::asio::io_context& io_context, CServer* server):
     _io_context(io_context), m_socket(io_context), _server(server), m_flag_close(false) {
     const boost::uuids::uuid uuid = boost::uuids::random_generator()();
-    m_uuid = boost::uuids::to_string(uuid);
+    m_session_id = boost::uuids::to_string(uuid);
 
     // 初始化接收消息头节点
     m_recv_head_node = std::make_shared<MsgNode>(HEAD_TOTAL_LEN);
-    std::cout << "CSession::CSession() uuid is : " << m_uuid << std::endl;
+    std::cout << "CSession::CSession() uuid is : " << m_session_id << std::endl;
 }
 
 CSession::~CSession() {
     try {
-        std::cerr << "CSession::~CSession() uuid is : " << m_uuid << std::endl;
+        std::cerr << "CSession::~CSession() uuid is : " << m_session_id << std::endl;
     }
     catch (std::exception& e) {
-        std::cerr << "CSession::~CSession() uuid is : " << m_uuid << "  Error: " << e.what() << std::endl;
+        std::cerr << "CSession::~CSession() uuid is : " << m_session_id << "  Error: " << e.what() << std::endl;
     }
 }
 
@@ -29,8 +29,16 @@ boost::asio::ip::tcp::socket& CSession::GetSocket() {
     return m_socket;
 }
 
-std::string& CSession::GetUUID() {
-    return m_uuid;
+std::string& CSession::GetSessionId() {
+    return m_session_id;
+}
+
+void CSession::SetUserId(int uid) {
+    m_user_id = uid;
+}
+
+int CSession::GetUserId() {
+    return m_user_id;
 }
 
 void CSession::Start() {
@@ -85,7 +93,7 @@ void CSession::Start() {
         catch (std::exception& e) {
             std::cerr << "CSession::Start Error: " << e.what() << std::endl;
             Close();
-            _server->ClearSession(m_uuid);
+            _server->ClearSession(m_session_id);
             co_return;
         }
     }, detached);
@@ -100,7 +108,7 @@ void CSession::Send(const char* msg, const short msg_len, const short msg_id) {
     std::unique_lock<std::mutex> lock(m_send_lock);
     const int send_que_size = m_send_que.size();
     if (send_que_size > MAX_SENDQUE) {
-        std::cerr << "CSession::Send send queue is fulled, UUID is " << m_uuid << std::endl;
+        std::cerr << "CSession::Send send queue is fulled, UUID is " << m_session_id << std::endl;
         return;
     }
     m_send_que.push(std::make_shared<SendNode>(msg, msg_len, msg_id));
@@ -136,7 +144,7 @@ void CSession::HandleWrite(boost::system::error_code ec, std::shared_ptr<CSessio
     catch (std::exception& e) {
         std::cerr << "CSession::HandleWrite Error: " << e.what() << std::endl;
         Close();
-        _server->ClearSession(m_uuid);
+        _server->ClearSession(m_session_id);
     }
 }
 

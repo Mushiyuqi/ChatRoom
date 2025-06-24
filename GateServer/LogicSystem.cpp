@@ -94,7 +94,7 @@ LogicSystem::LogicSystem() {
         // 3. 用户是否存在 查找数据库判断用户是否存在
         static MysqlManager& mysql = MysqlManager::GetInstance();
         int uid = mysql.RegUser(srcRoot["user"].asString(), srcRoot["email"].asString(),
-                                srcRoot["password"].asString());
+                                srcRoot["pwd"].asString());
         if (uid == -1 || uid == -2 || uid == -3) {
             // 注册用户错误
             std::cerr << "LogicSystem::LogicSystem Url:/user_register user or email exist" << std::endl;
@@ -113,7 +113,7 @@ LogicSystem::LogicSystem() {
         root["uid"] = uid;
         root["email"] = srcRoot["email"];
         root["user"] = srcRoot["user"].asString();
-        root["password"] = srcRoot["password"].asString();
+        root["pwd"] = srcRoot["pwd"].asString();
         root["confirm"] = srcRoot["confirm"].asString();
         root["verifycode"] = srcRoot["verifycode"].asString();
         std::string jsonstr = root.toStyledString();
@@ -173,7 +173,7 @@ LogicSystem::LogicSystem() {
 
         // 4. 修改密码
         flag = MysqlManager::GetInstance().
-            UpdatePwd(srcRoot["user"].asString(), srcRoot["password"].asString());
+            UpdatePwd(srcRoot["user"].asString(), srcRoot["pwd"].asString());
         if (!flag) {
             std::cerr << "LogicSystem::LogicSystem Url:/reset_pwd update password failed" << std::endl;
             root["error"] = ErrorCodes::PasswordUpFailed;
@@ -185,7 +185,7 @@ LogicSystem::LogicSystem() {
         root["error"] = ErrorCodes::Success;
         root["email"] = srcRoot["email"];
         root["user"] = srcRoot["user"].asString();
-        root["password"] = srcRoot["password"].asString();
+        root["pwd"] = srcRoot["pwd"].asString();
         root["verifycode"] = srcRoot["verifycode"].asString();
         std::string jsonstr = root.toStyledString();
         beast::ostream(connection->m_response.body()) << jsonstr;
@@ -211,7 +211,7 @@ LogicSystem::LogicSystem() {
             return true;
         }
         auto email = srcRoot["email"].asString();
-        auto pwd = srcRoot["password"].asString();
+        auto pwd = srcRoot["pwd"].asString();
         UserInfo userInfo;
         //查询数据库判断用户名和密码是否匹配
         bool pwd_valid = MysqlManager::GetInstance().CheckPassword(email, pwd, userInfo);

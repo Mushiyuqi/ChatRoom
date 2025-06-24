@@ -250,7 +250,7 @@ void ResetDialog::on_sure_btn_clicked()
     QJsonObject json_obj;
     json_obj["user"] = ui->user_edit->text();
     json_obj["email"] = ui->email_edit->text();
-    json_obj["password"] = Sha256Hash(ui->pwd_edit->text());
+    json_obj["pwd"] = Sha256Hash(ui->pwd_edit->text());
     json_obj["verifycode"] = ui->verify_edit->text();
     HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix + "/reset_pwd"),
                                         json_obj, ReqId::ID_RESET_PWD,Modules::RESET_MOD);

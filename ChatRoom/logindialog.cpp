@@ -210,7 +210,7 @@ void LoginDialog::on_login_btn_clicked()
     // 发送http登陆请求
     QJsonObject jsonObj;
     jsonObj["email"] = email;
-    jsonObj["password"] = Sha256Hash(pwd);
+    jsonObj["pwd"] = Sha256Hash(pwd);
     HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix+"/user_login"), jsonObj, ReqId::ID_LOGIN_USER, Modules::LOGINMOD);
 }
 

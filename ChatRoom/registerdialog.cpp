@@ -297,7 +297,7 @@ void RegisterDialog::on_confirm_btn_clicked()
     jsonObj["user"] = ui->user_edit->text();
     jsonObj["email"] = ui->email_edit->text();
     // 密码加密发送
-    jsonObj["password"] = Sha256Hash(ui->pass_edit->text());
+    jsonObj["pwd"] = Sha256Hash(ui->pass_edit->text());
     jsonObj["confirm"] = Sha256Hash(ui->confirm_edit->text());
     jsonObj["verifycode"] = ui->verify_edit->text();
     HttpManager::GetInstance().PostHttpReq(QUrl(gate_url_prefix + "/user_register"),

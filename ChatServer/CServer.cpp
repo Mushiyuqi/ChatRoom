@@ -25,7 +25,7 @@ void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::syste
     if (!error) {
         session->Start();
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_sessions[session->GetUUID()] = session;
+        m_sessions[session->GetSessionId()] = session;
     }
     else {
         std::cerr << "CServer::HandleAccept error: " << error.what() << std::endl;
