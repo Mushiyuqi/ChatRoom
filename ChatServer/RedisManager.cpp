@@ -233,6 +233,26 @@ bool RedisManager::Del(const std::string& key) {
     return true;
 }
 
+bool RedisManager::HDel(const std::string& key, const std::string& hkey) {
+    auto connect = m_pool->GetConnection();
+    if (connect == nullptr) return false;
+    auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "HDEL %s %s", key.c_str(), hkey.c_str()));
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::HDEL [ HDEL " << key << hkey << " ] error ! " << std::endl;
+        freeReplyObject(m_reply);
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    bool success = false;
+    if(m_reply->type == REDIS_REPLY_INTEGER)
+        success = m_reply->integer > 0;
+
+    freeReplyObject(m_reply);
+    m_pool->ReturnConnection(connect);
+    return success;
+}
+
 bool RedisManager::ExistsKey(const std::string& key) {
     auto connect = m_pool->GetConnection();
     if (connect == nullptr) return false;

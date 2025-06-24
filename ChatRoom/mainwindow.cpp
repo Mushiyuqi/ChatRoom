@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::SlotSwitchChat);
 
     // 测试 need deleted after
-    emit TcpManager::GetInstance().sig_switch_chatdlg();
+    // emit TcpManager::GetInstance().sig_switch_chatdlg();
 }
 
 MainWindow::~MainWindow()

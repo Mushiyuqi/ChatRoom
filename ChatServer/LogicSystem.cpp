@@ -108,7 +108,7 @@ void LogicSystem::RegisterCallBacks() {
             });
             rspJson["error"] = ErrorCodes::Success;
 
-            // 从状态服务器获取Token进行匹配
+            // 从Redis获取Token进行匹配
             std::string uidStr = std::to_string(uid);
             std::string tokenKey = USERTOKENPREFIX + uidStr;
             std::string tokenValue;
@@ -122,6 +122,7 @@ void LogicSystem::RegisterCallBacks() {
                 return;
             }
 
+            // 获取基础信息
             std::string baseKey = USER_BASE_INFO + uidStr;
             auto userInfo = std::make_shared<UserInfo>();
             bool flag = GetBaseInfo(baseKey, uid, userInfo);

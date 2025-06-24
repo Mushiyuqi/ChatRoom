@@ -2,6 +2,8 @@
 #include "IOContextPool.h"
 #include <iostream>
 #include "UserManager.h"
+#include "ConfigManager.h"
+#include "RedisManager.h"
 
 CServer::CServer(boost::asio::io_context& io_context, const short port):
     _io_context(io_context), m_acceptor(_io_context, tcp::endpoint(tcp::v4(), port)), m_port(port) {
@@ -23,8 +25,20 @@ void CServer::ClearSession(std::string sessionId) {
         UserManager::GetInstance().RemoveUserSession(m_sessions[sessionId]->GetUserId());
     }
 
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_sessions.erase(sessionId);
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_sessions.erase(sessionId);
+
+        // 连接计数减1
+        auto serverName = ConfigManager::GetInstance()["SelfServer"]["Name"];
+        std::string tmp;
+        RedisManager::GetInstance().HGet(LOGIN_COUNT, serverName, tmp);
+        if(tmp.empty()) return;
+        int count = std::stoi(tmp);
+        if(count <= 0) return;
+        auto countStr = std::to_string(--count);
+        RedisManager::GetInstance().HSet(LOGIN_COUNT, serverName, countStr);
+    }
 }
 
 void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::system::error_code& error) {
