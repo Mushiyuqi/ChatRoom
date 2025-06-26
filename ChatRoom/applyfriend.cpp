@@ -506,7 +506,7 @@ void ApplyFriend::SlotApplySure()
     jsonObj["touid"] = m_si->m_uid;
 
     QJsonDocument doc(jsonObj);
-    QByteArray jsonData = doc.toJson();
+    QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
 
     // 发送tcp请求
     emit TcpManager::GetInstance().sig_send_data(ReqId::ID_ADD_FRIEND, jsonData);

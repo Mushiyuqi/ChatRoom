@@ -106,6 +106,7 @@ TcpManager::TcpManager():m_host(""), m_b_recv_pending(false), m_message_id(0), m
 
 void TcpManager::InitHandlers()
 {
+    // 处理用户登陆服务器回包
     m_handlers.insert(ReqId::ID_CHAT_LOGIN, [this](ReqId id, int len, QByteArray data){
         Q_UNUSED(len)
         // 将QByteArray转换为QJsonDocument
@@ -143,7 +144,7 @@ void TcpManager::InitHandlers()
         qDebug() << "登陆成功";
         emit sig_switch_chatdlg();
     });
-
+    // 处理搜索用户服务器回包
     m_handlers.insert(ReqId::ID_SEARCH_USER, [this](ReqId id, int len, QByteArray data){
         Q_UNUSED(len);
         // 将QByteArray转换为QJsonDocument
@@ -173,6 +174,30 @@ void TcpManager::InitHandlers()
             jsonObj["sex"].toInt(), jsonObj["icon"].toString());
 
         emit sig_user_search(searchInfo);
+    });
+    // 处理添加好友服务器回包
+    m_handlers.insert(ReqId::ID_ADD_FRIEND, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            emit sig_user_search(nullptr);
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+        qDebug() << "Add Friend Require Success " ;
     });
 }
 

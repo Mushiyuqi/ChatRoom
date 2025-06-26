@@ -4,6 +4,7 @@
 #include "RedisManager.h"
 #include "ConfigManager.h"
 #include "UserManager.h"
+#include "ChatGrpcClient.h"
 
 LogicSystem::LogicSystem(): m_is_stop(false) {
     // 注册回调函数
@@ -166,7 +167,7 @@ void LogicSystem::RegisterCallBacks() {
             // 绑定uid与session
             UserManager::GetInstance().SetUserSession(uid, session);
         };
-
+    // 查询用户
     m_fun_callbacks[ReqId::ID_SEARCH_USER] =
         [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
             // 注册返回函数
@@ -190,6 +191,69 @@ void LogicSystem::RegisterCallBacks() {
             }else {
                 GetUserByName(uid, returnJson);
             }
+    };
+    // 添加好友申请
+    m_fun_callbacks[ReqId::ID_ADD_FRIEND] =
+        [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
+            // 注册返回函数
+            Json::Value returnJson;
+            returnJson["error"] = ErrorCodes::Success;
+            Defer defer([this, &returnJson, session]() {
+                const std::string rspStr = returnJson.toStyledString();
+                session->Send(rspStr, ReqId::ID_ADD_FRIEND);
+            });
+
+            // 处理Json数据
+            Json::Reader reader;
+            Json::Value value;
+            reader.parse(msg_data, value);
+            // 获取数据
+            auto uid = value["uid"].asInt();
+            auto applyname = value["applyname"].asString();
+            auto backname = value["backname"].asString();
+            auto touid = value["touid"].asInt();
+
+            // 先更新数据库
+            MysqlManager::GetInstance().AddFriendApply(uid, touid);
+
+            // 查找redis 查找touid对应的server ip
+            auto touidStr = std::to_string(touid);
+            auto toipKey = USERIPPREFIX + touidStr;
+            std::string toipValue;
+            bool flag = RedisManager::GetInstance().Get(toipKey, toipValue);
+            if(!flag) {return;}
+
+            // 通知好友申请
+            auto selfName = ConfigManager::GetInstance()["SelfServer"]["Name"];
+            // 在本服务器
+            if(toipValue == selfName) {
+                auto toSession = UserManager::GetInstance().GetSession(touid);
+                if(toSession !=  nullptr) {
+                    Json::Value notify;
+                    notify["error"] = ErrorCodes::Success;
+                    notify["applyuid"] = uid;
+                    notify["name"] = applyname;
+                    notify["desc"] = "";
+                    toSession->Send(notify.toStyledString(), ReqId::ID_NOTIFY_ADD_FRIEND);
+                }
+                return;
+            }
+            // 在其他服务器
+            std::string baseKey = USER_BASE_INFO + touidStr;
+            auto userInfo = std::make_shared<UserInfo>();
+            flag = GetBaseInfo(baseKey, touid, userInfo);
+            AddFriendReq addReq;
+            addReq.set_applyuid(uid);
+            addReq.set_name(applyname);
+            addReq.set_touid(touid);
+            addReq.set_desc("");
+            if (flag) {
+                addReq.set_icon(userInfo->icon);
+                addReq.set_sex(userInfo->sex);
+                addReq.set_nick(userInfo->nick);
+            }
+
+            ChatGrpcClient::GetInstance().NotifyAddFriend(toipValue, addReq);
     };
 }
 

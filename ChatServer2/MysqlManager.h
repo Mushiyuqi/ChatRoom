@@ -15,6 +15,7 @@ public:
     bool CheckPassword(const std::string& email, const std::string& password, UserInfo& userInfo);
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(const std::string& name);
+    bool AddFriendApply(int uid, int touid);
 
 private:
     MysqlManager() = default;

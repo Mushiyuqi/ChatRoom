@@ -14,6 +14,7 @@ public:
     bool CheckPwd(const std::string& email, const std::string& pwd, UserInfo& userInfo);
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(const std::string& name);
+    bool AddFriendApply(int uid, int touid);
 
     // bool TestProcedure(const std::string& email, int& uid, std::string& name);
 private:

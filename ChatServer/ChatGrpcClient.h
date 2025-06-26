@@ -35,7 +35,7 @@ public:
     ChatGrpcClient& operator=(const ChatGrpcClient&) = delete;
 
     ~ChatGrpcClient() = default;
-    static ChatGrpcClient& getInstance();
+    static ChatGrpcClient& GetInstance();
 
     AddFriendRsp NotifyAddFriend(std::string server_ip, const AddFriendReq& req);
     AuthFriendRsp NotifyAuthFriend(std::string server_ip, const AuthFriendReq& req);
