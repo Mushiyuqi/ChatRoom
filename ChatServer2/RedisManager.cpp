@@ -29,7 +29,7 @@ bool RedisManager::Get(const std::string& key, std::string& value) {
     auto m_reply = static_cast<redisReply*>(redisCommand(connect, "GET %s", key.c_str()));
     if (m_reply == nullptr) {
         std::cerr << "RedisManager::Get [ GET  " << key << " ] error" << std::endl;
-        freeReplyObject(m_reply);
+        // freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
         return false;
     }
@@ -52,7 +52,7 @@ bool RedisManager::Set(const std::string& key, const std::string& value) {
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "SET %s %s", key.c_str(), value.c_str()));
     if (m_reply == nullptr) {
         std::cerr << "RedisManager::Set [ SET  " << key << " : " << value << " ] error" << std::endl;
-        freeReplyObject(m_reply);
+        // freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
         return false;
     }
@@ -75,7 +75,7 @@ bool RedisManager::LPush(const std::string& key, const std::string& value) {
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "LPUSH %s %s", key.c_str(), value.c_str()));
     if (m_reply == nullptr) {
         std::cerr << "RedisManager::LPush [ LPUSH  " << key << " : " << value << " ] error" << std::endl;
-        freeReplyObject(m_reply);
+        // freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
         return false;
     }
@@ -96,7 +96,14 @@ bool RedisManager::LPop(const std::string& key, std::string& value) {
     auto connect = m_pool->GetConnection();
     if (connect == nullptr) return false;
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "LPOP %s ", key.c_str()));
-    if (m_reply == nullptr || m_reply->type == REDIS_REPLY_NIL) {
+
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::LPop [ LPOP " << key << " ] error" << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type == REDIS_REPLY_NIL) {
         std::cerr << "RedisManager::LPop [ LPOP " << key << " ] error" << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -115,7 +122,6 @@ bool RedisManager::RPush(const std::string& key, const std::string& value) {
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "RPUSH %s %s", key.c_str(), value.c_str()));
     if (m_reply == nullptr) {
         std::cerr << "RedisManager::RPush [ RPUSH  " << key << " : " << value << " ] error" << std::endl;
-        freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
         return false;
     }
@@ -136,7 +142,13 @@ bool RedisManager::RPop(const std::string& key, std::string& value) {
     auto connect = m_pool->GetConnection();
     if (connect == nullptr) return false;
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "RPOP %s ", key.c_str()));
-    if (m_reply == nullptr || m_reply->type == REDIS_REPLY_NIL) {
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::RPop [ RPOP " << key << " ] error" << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type == REDIS_REPLY_NIL) {
         std::cerr << "RedisManager::RPop [ RPOP " << key << " ] error" << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -154,7 +166,14 @@ bool RedisManager::HSet(const std::string& key, const std::string& hkey, const s
     if (connect == nullptr) return false;
     auto* m_reply = static_cast<redisReply*>
         (redisCommand(connect, "HSET %s %s %s", key.c_str(), hkey.c_str(), value.c_str()));
-    if (m_reply == nullptr || m_reply->type != REDIS_REPLY_INTEGER) {
+
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::HSet' [ HSet " << key << "  " << hkey << "  " << value << " ] error" << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type != REDIS_REPLY_INTEGER) {
         std::cerr << "RedisManager::HSet' [ HSet " << key << "  " << hkey << "  " << value << " ] error" << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -180,7 +199,14 @@ bool RedisManager::HSet(const char* key, const char* hkey, const char* hvalue, c
     argv[3] = hvalue;
     argvlen[3] = hvaluelen;
     auto* m_reply = static_cast<redisReply*>(redisCommandArgv(connect, 4, argv, argvlen));
-    if (m_reply == nullptr || m_reply->type != REDIS_REPLY_INTEGER) {
+
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::HSet'' [ HSet " << key << "  " << hkey << "  " << hvalue << " ] error" << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type != REDIS_REPLY_INTEGER) {
         std::cerr << "RedisManager::HSet'' [ HSet " << key << "  " << hkey << "  " << hvalue << " ] error" << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -204,6 +230,13 @@ bool RedisManager::HGet(const std::string& key, const std::string& hkey, std::st
     argv[2] = hkey.c_str();
     argvlen[2] = hkey.length();
     auto* m_reply = static_cast<redisReply*>(redisCommandArgv(connect, 3, argv, argvlen));
+
+    if (m_reply == nullptr) {
+        m_pool->ReturnConnection(connect);
+        std::cerr << "RedisManager::HGet [ HGet " << key << " " << hkey << " ] error ! " << std::endl;
+        return false;
+    }
+
     if (m_reply == nullptr || m_reply->type == REDIS_REPLY_NIL) {
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -221,7 +254,14 @@ bool RedisManager::Del(const std::string& key) {
     auto connect = m_pool->GetConnection();
     if (connect == nullptr) return false;
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "DEL %s", key.c_str()));
-    if (m_reply == nullptr || m_reply->type != REDIS_REPLY_INTEGER) {
+
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::Del [ Del " << key << " ] error ! " << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type != REDIS_REPLY_INTEGER) {
         std::cerr << "RedisManager::Del [ Del " << key << " ] error ! " << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
@@ -239,7 +279,6 @@ bool RedisManager::HDel(const std::string& key, const std::string& hkey) {
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "HDEL %s %s", key.c_str(), hkey.c_str()));
     if (m_reply == nullptr) {
         std::cerr << "RedisManager::HDEL [ HDEL " << key << hkey << " ] error ! " << std::endl;
-        freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
         return false;
     }
@@ -257,7 +296,14 @@ bool RedisManager::ExistsKey(const std::string& key) {
     auto connect = m_pool->GetConnection();
     if (connect == nullptr) return false;
     auto* m_reply = static_cast<redisReply*>(redisCommand(connect, "exists %s", key.c_str()));
-    if (m_reply == nullptr || m_reply->type != REDIS_REPLY_INTEGER || m_reply->integer == 0) {
+
+    if (m_reply == nullptr) {
+        std::cerr << "RedisManager::ExistsKey Not Found [ Key " << key << " ]" << std::endl;
+        m_pool->ReturnConnection(connect);
+        return false;
+    }
+
+    if (m_reply->type != REDIS_REPLY_INTEGER || m_reply->integer == 0) {
         std::cerr << "RedisManager::ExistsKey Not Found [ Key " << key << " ]" << std::endl;
         freeReplyObject(m_reply);
         m_pool->ReturnConnection(connect);
