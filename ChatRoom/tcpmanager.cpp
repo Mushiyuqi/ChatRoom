@@ -183,7 +183,6 @@ void TcpManager::InitHandlers()
 
         // 检查转换是否成功
         if (jsonDoc.isNull()) {
-            emit sig_user_search(nullptr);
             return;
         }
 
@@ -198,6 +197,39 @@ void TcpManager::InitHandlers()
         }
 
         qDebug() << "Add Friend Require Success " ;
+    });
+    // 处理通知添加好友服务器回包
+    m_handlers.insert(ReqId::ID_NOTIFY_ADD_FRIEND, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+        int fromUid = jsonObj["applyuid"].toInt();
+        QString name = jsonObj["name"].toString();
+        QString desc = jsonObj["desc"].toString();
+        QString icon = jsonObj["icon"].toString();
+        QString nick = jsonObj["nick"].toString();
+        int sex = jsonObj["sex"].toInt();
+
+        auto applyInfo = std::make_shared<AddFriendApply>(
+            fromUid, name, desc, icon, nick, sex);
+
+        emit sig_friend_apply(applyInfo);
     });
 }
 

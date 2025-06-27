@@ -17,12 +17,15 @@ public:
 
 class AddFriendApply {
 public:
-    AddFriendApply(int from_uid, QString name, QString desc)
-        :m_from_uid(from_uid),m_name(name),m_desc(desc)
+    AddFriendApply(int from_uid, QString name, QString desc, QString icon, QString nick, int sex)
+        :m_from_uid(from_uid),m_name(name),m_desc(desc),m_icon(icon), m_nick(nick), m_sex(sex)
     {}
     int m_from_uid;
     QString m_name;
     QString m_desc;
+    QString m_icon;
+    QString m_nick;
+    int m_sex;
 };
 
 struct ApplyInfo {

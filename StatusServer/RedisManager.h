@@ -25,6 +25,7 @@ public:
     bool HSet(const char* key, const char* hkey, const char* hvalue, size_t hvaluelen);
     bool HGet(const std::string &key, const std::string &hkey, std::string& value);
     bool Del(const std::string &key);
+    bool HDel(const std::string &key, const std::string &hkey);
     bool ExistsKey(const std::string &key);
 
 private:

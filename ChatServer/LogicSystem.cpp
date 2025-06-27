@@ -224,6 +224,10 @@ void LogicSystem::RegisterCallBacks() {
             if(!flag) {return;}
 
             // 通知好友申请
+            // 查询用户信息
+            std::string baseKey = USER_BASE_INFO + touidStr;
+            auto userInfo = std::make_shared<UserInfo>();
+            flag = GetBaseInfo(baseKey, touid, userInfo);
             auto selfName = ConfigManager::GetInstance()["SelfServer"]["Name"];
             // 在本服务器
             if(toipValue == selfName) {
@@ -234,14 +238,16 @@ void LogicSystem::RegisterCallBacks() {
                     notify["applyuid"] = uid;
                     notify["name"] = applyname;
                     notify["desc"] = "";
+                    if(flag) {
+                        notify["icon"] = userInfo->icon;
+                        notify["sex"] = userInfo->sex;
+                        notify["nick"] = userInfo->nick;
+                    }
                     toSession->Send(notify.toStyledString(), ReqId::ID_NOTIFY_ADD_FRIEND);
                 }
                 return;
             }
             // 在其他服务器
-            std::string baseKey = USER_BASE_INFO + touidStr;
-            auto userInfo = std::make_shared<UserInfo>();
-            flag = GetBaseInfo(baseKey, touid, userInfo);
             AddFriendReq addReq;
             addReq.set_applyuid(uid);
             addReq.set_name(applyname);

@@ -253,7 +253,7 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(const std::string& name) {
 
 bool MysqlDao::AddFriendApply(int uid, int touid) {
 	auto con = m_pool->getConnection();
-	if (con == nullptr) return nullptr;
+	if (con == nullptr) return false;
 	Defer defer([this, &con]() {m_pool->returnConnection(std::move(con));});
 
 	try {
