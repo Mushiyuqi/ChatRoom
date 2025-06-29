@@ -221,7 +221,7 @@ void LogicSystem::RegisterCallBacks() {
             auto toipKey = USERIPPREFIX + touidStr;
             std::string toipValue;
             bool flag = RedisManager::GetInstance().Get(toipKey, toipValue);
-            if(!flag) {return;}
+            if(!flag) {return;} // 用户不在线则退出
 
             // 通知好友申请
             // 查询用户信息

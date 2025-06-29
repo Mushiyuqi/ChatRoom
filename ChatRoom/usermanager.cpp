@@ -40,3 +40,17 @@ std::vector<std::shared_ptr<ApplyInfo> > UserManager::GetApplyList()
 {
     return m_apply_list;
 }
+
+bool UserManager::AlreadyApply(int uid)
+{
+    for(auto& apply : m_apply_list){
+        if(apply->m_uid == uid)
+            return true;
+    }
+    return false;
+}
+
+void UserManager::AddApplyList(std::shared_ptr<ApplyInfo> app)
+{
+    m_apply_list.push_back(app);
+}

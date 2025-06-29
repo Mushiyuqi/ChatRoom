@@ -5,6 +5,8 @@
 #include <QAction>
 #include <QRandomGenerator>
 #include <QMouseEvent>
+#include "tcpmanager.h"
+#include "usermanager.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ChatDialog),
@@ -86,6 +88,9 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     //为searchlist 设置search edit
     ui->search_list->SetSearchEdit(ui->search_edit);
+
+    // 连接加载联系人的信号和槽函数
+    connect(&TcpManager::GetInstance(), &TcpManager::sig_friend_apply, this, &ChatDialog::slot_apply_friend);
 }
 
 void ChatDialog::AddLBGroup(StateWidget* lb)
@@ -223,5 +228,22 @@ void ChatDialog::slot_text_changed(const QString &str)
     if (!str.isEmpty()) {
         ShowSearch(true);
     }
+}
+
+void ChatDialog::slot_apply_friend(std::shared_ptr<AddFriendApply> apply)
+{
+    qDebug() << "ChatDialog::slot_apply_friend, from_uid is " << apply->m_from_uid;
+
+    bool already = UserManager::GetInstance().AlreadyApply(apply->m_from_uid);
+    if(already){
+        // 已经有申请了退出
+        return;
+    }
+
+    // 添加好友申请到列表与用户管理
+    UserManager::GetInstance().AddApplyList(std::make_shared<ApplyInfo>(apply));
+    ui->side_contact_lb->ShowRedPoint(true);
+    ui->con_user_list->ShowRedPoint(true);
+    ui->friend_apply_page->AddNewApply(apply);
 }
 
