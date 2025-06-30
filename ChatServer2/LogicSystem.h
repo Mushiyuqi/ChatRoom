@@ -3,9 +3,12 @@
 #include <thread>
 #include <map>
 #include <functional>
+#include <memory>
+#include <vector>
 #include <json/json.h>
 #include "CSession.h"
 #include "const.h"
+#include "data.h"
 
 struct UserInfo;
 
@@ -23,6 +26,7 @@ private:
     void DealMsg();
     void RegisterCallBacks();
     bool GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo> &userInfo);
+    bool GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& vector);
 
     static bool IsPureDigit(const std::string& str);
     void GetUserByUid(const std::string& uid_str, Json::Value& user_info);

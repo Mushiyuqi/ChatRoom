@@ -5,6 +5,7 @@
 class MysqlManager {
 public:
     ~MysqlManager() = default;
+
     MysqlManager(const MysqlManager&) = delete;
     MysqlManager& operator=(const MysqlManager&) = delete;
     static MysqlManager& GetInstance();
@@ -16,6 +17,7 @@ public:
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(const std::string& name);
     bool AddFriendApply(int uid, int touid);
+    bool GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& applyList, int begin, int limit = 10);
 
 private:
     MysqlManager() = default;

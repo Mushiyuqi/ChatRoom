@@ -141,7 +141,21 @@ void LogicSystem::RegisterCallBacks() {
             rspJson["sex"] = userInfo->sex;
             rspJson["icon"] = userInfo->icon;
 
-            // todo 从数据库获取申请列表
+            std::vector<std::shared_ptr<ApplyInfo>> applyList;
+            flag = GetFriendApplyList(uid, applyList);
+            if(flag) {
+                for (auto& applyInfo : applyList) {
+                    Json::Value applyJson;
+                    applyJson["name"] = applyInfo->name;
+                    applyJson["uid"] = applyInfo->uid;
+                    applyJson["icon"] = applyInfo->icon;
+                    applyJson["nick"] = applyInfo->nick;
+                    applyJson["sex"] = applyInfo->sex;
+                    applyJson["desc"] = applyInfo->desc;
+                    applyJson["status"] = applyInfo->status;
+                    rspJson["apply_list"].append(applyJson);
+                 }
+            }
 
             // todo 获取好友列表
 
@@ -298,6 +312,11 @@ bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_p
     root["icon"] = userInfo->icon;
     RedisManager::GetInstance().Set(baseKey, root.toStyledString());
     return true;
+}
+
+bool LogicSystem::GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& applyList) {
+    // 从Mysql中获取
+    return MysqlManager::GetInstance().GetFriendApplyList(uid, applyList, 0, 10);  // 简单模拟分页
 }
 
 bool LogicSystem::IsPureDigit(const std::string& str) {

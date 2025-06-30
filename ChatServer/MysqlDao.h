@@ -15,6 +15,7 @@ public:
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(const std::string& name);
     bool AddFriendApply(int uid, int touid);
+    bool GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& vector, int begin, int limit);
 
     // bool TestProcedure(const std::string& email, int& uid, std::string& name);
 private:

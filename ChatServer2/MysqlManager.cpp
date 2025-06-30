@@ -18,7 +18,7 @@ bool MysqlManager::UpdatePwd(const std::string& name, const std::string& passwor
 }
 
 bool MysqlManager::CheckPassword(const std::string& email, const std::string& password, UserInfo& userInfo) {
-    return  m_dao.CheckPwd(email, password, userInfo);
+    return m_dao.CheckPwd(email, password, userInfo);
 }
 
 std::shared_ptr<UserInfo> MysqlManager::GetUser(const int uid) {
@@ -31,4 +31,9 @@ std::shared_ptr<UserInfo> MysqlManager::GetUser(const std::string& name) {
 
 bool MysqlManager::AddFriendApply(int uid, int touid) {
     return m_dao.AddFriendApply(uid, touid);
+}
+
+bool MysqlManager::GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& applyList, int begin,
+                                      int limit) {
+    return m_dao.GetFriendApplyList(uid, applyList, begin, limit);
 }

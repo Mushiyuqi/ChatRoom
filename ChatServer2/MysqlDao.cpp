@@ -273,7 +273,45 @@ bool MysqlDao::AddFriendApply(int uid, int touid) {
 		return true;
 	}
 	catch (sql::SQLException& e) {
-		std::cerr << "MysqlDao::GetUser SQLException: " << e.what();
+		std::cerr << "MysqlDao::AddFriendApply SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
+	}
+}
+
+bool MysqlDao::GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& applyList, int begin,
+	int limit) {
+	auto con = m_pool->getConnection();
+	if (con == nullptr) return false;
+	Defer defer([this, &con]() {m_pool->returnConnection(std::move(con));});
+
+	try {
+		// 准备SQL语句, 根据起始id和限制条数返回列表
+		std::unique_ptr<sql::PreparedStatement> pstmt(con->m_conn->prepareStatement(
+			"select apply.from_uid, apply.status, user.name, "
+			"user.nick, user.sex from friend_apply as apply join user on apply.from_uid = user.uid where apply.to_uid = ? "
+			"and apply.id > ? order by apply.id ASC LIMIT ? "));
+
+		pstmt->setInt(1, uid); // 将uid替换为你要查询的uid
+		pstmt->setInt(2, begin); // 起始id
+		pstmt->setInt(3, limit); //偏移量
+		// 执行查询
+		std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+		// 遍历结果集
+		while (res->next()) {
+			auto name = res->getString("name");
+			auto uid = res->getInt("from_uid");
+			auto status = res->getInt("status");
+			auto nick = res->getString("nick");
+			auto sex = res->getInt("sex");
+			auto apply_ptr = std::make_shared<ApplyInfo>(uid, name, "", "", nick, sex, status);
+			applyList.emplace_back(apply_ptr);
+		}
+		return true;
+	}
+	catch (sql::SQLException& e) {
+		std::cerr << "MysqlDao::GetFriendApplyList SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
 		return false;
