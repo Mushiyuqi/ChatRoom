@@ -14,7 +14,11 @@ void UserManager::SetToken(QString token)
 
 bool UserManager::CheckFriendById(int uid)
 {
-
+    auto iter = m_friend_map.find(uid);
+    if(iter == m_friend_map.end()){
+        return false;
+    }
+    return true;
 }
 
 int UserManager::GetUid()
@@ -66,4 +70,26 @@ void UserManager::AppendApplyList(QJsonArray arr)
                                                 desc, icon, nick, sex, status);
         m_apply_list.push_back(info);
     }
+}
+
+void UserManager::AddFriend(std::shared_ptr<AuthRsp> auth_rsp)
+{
+    auto friend_info = std::make_shared<FriendInfo>(auth_rsp);
+    m_friend_map[friend_info->m_uid] = friend_info;
+}
+
+void UserManager::AddFriend(std::shared_ptr<AuthInfo> auth_info)
+{
+    auto friend_info = std::make_shared<FriendInfo>(auth_info);
+    m_friend_map[friend_info->m_uid] = friend_info;
+}
+
+std::shared_ptr<FriendInfo> UserManager::GetFriendById(int uid)
+{
+    auto find_it = m_friend_map.find(uid);
+    if(find_it == m_friend_map.end()){
+        return nullptr;
+    }
+
+    return *find_it;
 }

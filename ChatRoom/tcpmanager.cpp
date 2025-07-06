@@ -242,6 +242,67 @@ void TcpManager::InitHandlers()
 
         emit sig_friend_apply(applyInfo);
     });
+    // 处理通知认证添加好友服务器回包
+    m_handlers.insert(ReqId::ID_NOTIFY_AUTH_FRIEND, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+        int fromUid = jsonObj["fromuid"].toInt();
+        QString name = jsonObj["name"].toString();
+        QString nick = jsonObj["nick"].toString();
+        QString icon = jsonObj["icon"].toString();
+        int sex = jsonObj["sex"].toInt();
+
+        auto authInfo = std::make_shared<AuthInfo>(
+            fromUid, name, nick, icon, sex);
+
+        emit sig_add_auth_friend(authInfo);
+    });
+    // 处理认证添加好友服务器回包
+    m_handlers.insert(ReqId::ID_AUTH_FRIEND, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+        auto uid = jsonObj["uid"].toInt();
+        auto rsp = std::make_shared<AuthRsp>(uid, name, nick, icon, sex);
+        emit sig_auth_rsp(rsp);
+    });
 }
 
 void TcpManager::HandleMsg(ReqId id, int len, QByteArray data)

@@ -20,13 +20,13 @@ ContactUserList::ContactUserList(QWidget *parent): m_add_friend_item(nullptr)
     //连接点击的信号和槽
     connect(this, &QListWidget::itemClicked, this, &ContactUserList::slot_item_clicked);
 
-    // //链接对端同意认证后通知的信号
-    // connect(&TcpManager::GetInstance(), &TcpManager::sig_add_auth_friend, this,
-    //         &ContactUserList::slot_add_auth_firend);
+    //链接对端同意认证后通知的信号
+    connect(&TcpManager::GetInstance(), &TcpManager::sig_add_auth_friend, this,
+            &ContactUserList::slot_add_auth_firend);
 
-    // //链接自己点击同意认证后界面刷新
-    // connect(&TcpManager::GetInstance(), &TcpManager::sig_auth_rsp, this,
-    //         &ContactUserList::slot_auth_rsp);
+    //链接自己点击同意认证后界面刷新
+    connect(&TcpManager::GetInstance(), &TcpManager::sig_auth_rsp, this,
+            &ContactUserList::slot_auth_rsp);
 
 }
 
@@ -180,5 +180,47 @@ void ContactUserList::slot_item_clicked(QListWidgetItem *item)
         emit sig_switch_friend_info_page(user_info);
         return;
     }
+}
+
+void ContactUserList::slot_add_auth_firend(std::shared_ptr<AuthInfo> auth_info)
+{
+    bool isFriend = UserManager::GetInstance().CheckFriendById(auth_info->m_uid);
+    if(isFriend) return;
+
+    int randomValue = QRandomGenerator::global()->bounded(100);
+    int str_i = randomValue%strs.size();
+    int head_i = randomValue%heads.size();
+
+    auto *con_user_wid = new ContactUserItem();
+    con_user_wid->SetInfo(auth_info);
+    QListWidgetItem* item = new QListWidgetItem;
+    item->setSizeHint(con_user_wid->sizeHint());
+
+    // 获取groupitem 的索引
+    int index = this->row(m_groupitem);
+    this->insertItem(index+1, item);
+
+    this->setItemWidget(item, con_user_wid);
+}
+
+void ContactUserList::slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp)
+{
+    bool isFriend = UserManager::GetInstance().CheckFriendById(auth_rsp->m_uid);
+    if(isFriend) return;
+
+    int randomValue = QRandomGenerator::global()->bounded(100);
+    int str_i = randomValue%strs.size();
+    int head_i = randomValue%heads.size();
+
+    auto *con_user_wid = new ContactUserItem();
+    con_user_wid->SetInfo(auth_rsp->m_uid, auth_rsp->m_name, heads[head_i]);
+    QListWidgetItem* item = new QListWidgetItem;
+    item->setSizeHint(con_user_wid->sizeHint());
+
+    // 获取groupitem 的索引
+    int index = this->row(m_groupitem);
+    this->insertItem(index+1, item);
+
+    this->setItemWidget(item, con_user_wid);
 }
 

@@ -1,5 +1,6 @@
 #include "chatuseritem.h"
 #include "ui_chatuseritem.h"
+#include "userdata.h"
 
 ChatUserItem::ChatUserItem(QWidget *parent)
     : ListItemBase(parent)
@@ -19,18 +20,16 @@ QSize ChatUserItem::sizeHint() const
     return QSize(250, 70);
 }
 
-void ChatUserItem::SetInfo(QString name, QString head, QString msg){
-    m_name = name;
-    m_head = head;
-    m_msg = msg;
-    // 加载图片
-    QPixmap pixmap(m_head);
+void ChatUserItem::SetInfo(std::shared_ptr<UserInfo> user_info)
+{
+    m_user_info = user_info;
+    QPixmap pixmap(m_user_info->m_icon);
 
     // 设置图片自动缩放
     ui->icon_lb->setPixmap(pixmap.scaled(ui->icon_lb->size(),
                                          Qt::KeepAspectRatio, Qt::SmoothTransformation));
     ui->icon_lb->setScaledContents(true);
 
-    ui->user_name_lb->setText(m_name);
-    ui->user_chat_lb->setText(m_msg);
+    ui->user_name_lb->setText(m_user_info->m_name);
+    ui->user_chat_lb->setText(m_user_info->m_last_msg);
 }

@@ -157,8 +157,6 @@ void LogicSystem::RegisterCallBacks() {
                  }
             }
 
-            // todo 获取好友列表
-
             // 将登陆数量增加
             auto serverName = ConfigManager::GetInstance()["SelfServer"]["Name"];
             std::string tmp;
@@ -275,6 +273,7 @@ void LogicSystem::RegisterCallBacks() {
 
             ChatGrpcClient::GetInstance().NotifyAddFriend(toipValue, addReq);
     };
+
 }
 
 bool LogicSystem::GetBaseInfo(const std::string& baseKey, int uid, std::shared_ptr<UserInfo>& userInfo) {
