@@ -136,9 +136,20 @@ void TcpManager::InitHandlers()
         }
 
         // 持续化数据
-        UserManager::GetInstance().SetName(jsonObj["name"].toString());
-        UserManager::GetInstance().SetUid(jsonObj["uid"].toInt());
+        auto uid = jsonObj["uid"].toInt();
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+
+        auto userInfo = std::make_shared<UserInfo>(uid, name, nick, icon, sex);
+        UserManager::GetInstance().SetUserInfo(userInfo);
         UserManager::GetInstance().SetToken(jsonObj["token"].toString());
+
+        // 获取好友申请
+        if(jsonObj.contains("apply_list")){
+            UserManager::GetInstance().AppendApplyList(jsonObj["apply_list"].toArray());
+        }
 
         // 切换页面
         qDebug() << "登陆成功";
