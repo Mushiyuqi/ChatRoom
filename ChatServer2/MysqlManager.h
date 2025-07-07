@@ -6,6 +6,7 @@ class MysqlManager {
 public:
     ~MysqlManager() = default;
 
+
     MysqlManager(const MysqlManager&) = delete;
     MysqlManager& operator=(const MysqlManager&) = delete;
     static MysqlManager& GetInstance();
@@ -20,6 +21,7 @@ public:
     bool GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& applyList, int begin, int limit = 10);
     bool AuthFriendApply(const int from, const int to);
     bool AddFriend(const int from, const int to, const std::string& back_name);
+    bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friendList);
 private:
     MysqlManager() = default;
     MysqlDao m_dao;

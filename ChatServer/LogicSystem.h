@@ -32,6 +32,8 @@ private:
     void GetUserByUid(const std::string& uid_str, Json::Value& user_info);
     void GetUserByName(const std::string& name, Json::Value& user_info);
 
+    bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friendList);
+
     std::thread m_worker_thread;
     std::queue<std::shared_ptr<LogicNode>> m_msg_que;
     std::mutex m_mutex;

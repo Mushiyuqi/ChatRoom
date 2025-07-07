@@ -45,3 +45,7 @@ bool MysqlManager::AuthFriendApply(const int from, const int to) {
 bool MysqlManager::AddFriend(const int from, const int to, const std::string& back_name) {
     return m_dao.AddFriend(from, to, back_name);
 }
+
+bool MysqlManager::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friendList) {
+    return m_dao.GetFriendList(uid, friendList);
+}

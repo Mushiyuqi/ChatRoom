@@ -18,6 +18,7 @@ public:
     bool GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo>>& vector, int begin, int limit);
     bool AuthFriendApply(int from, int to);
     bool AddFriend(int from, int to, const std::string& string);
+    bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friendList);
 
     // bool TestProcedure(const std::string& email, int& uid, std::string& name);
 private:

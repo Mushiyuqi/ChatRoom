@@ -29,6 +29,10 @@ void LogicSystem::PostMsgToQue(std::shared_ptr<LogicNode> msg) {
     }
 }
 
+bool LogicSystem::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friendList) {
+    return MysqlManager::GetInstance().GetFriendList(uid, friendList);
+}
+
 LogicSystem& LogicSystem::GetInstance() {
     static LogicSystem instance;
     return instance;
@@ -155,6 +159,21 @@ void LogicSystem::RegisterCallBacks() {
                     applyJson["status"] = applyInfo->status;
                     rspJson["apply_list"].append(applyJson);
                  }
+            }
+
+            // 获取好友列表
+            std::vector<std::shared_ptr<UserInfo>> friendList;
+            flag = GetFriendList(uid, friendList);
+            for (auto& e : friendList) {
+                Json::Value friendJson;
+                friendJson["name"] = e->name;
+                friendJson["uid"] = e->uid;
+                friendJson["icon"] = e->icon;
+                friendJson["nick"] = e->nick;
+                friendJson["sex"] = e->sex;
+                friendJson["desc"] = e->desc;
+                friendJson["back"] = e->back;
+                rspJson["friend_list"].append(friendJson);
             }
 
             // 将登陆数量增加
