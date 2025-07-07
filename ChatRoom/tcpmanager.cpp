@@ -151,6 +151,11 @@ void TcpManager::InitHandlers()
             UserManager::GetInstance().AppendApplyList(jsonObj["apply_list"].toArray());
         }
 
+        //添加好友列表
+        if (jsonObj.contains("friend_list")) {
+            UserManager::GetInstance().AppendFriendList(jsonObj["friend_list"].toArray());
+        }
+
         // 切换页面
         qDebug() << "登陆成功";
         emit sig_switch_chatdlg();

@@ -27,10 +27,10 @@ public:
     void AddApplyList(std::shared_ptr<ApplyInfo> app);
     void SetUserInfo(std::shared_ptr<UserInfo> userInfo);
     void AppendApplyList(QJsonArray arr);
+    void AppendFriendList(QJsonArray arr);
     void AddFriend(std::shared_ptr<AuthRsp> auth_rsp);
     void AddFriend(std::shared_ptr<AuthInfo> auth_info);
     std::shared_ptr<FriendInfo> GetFriendById(int uid);
-
 private:
     UserManager() = default;
 
@@ -38,6 +38,7 @@ private:
     QString m_token;
     int m_uid;
     std::vector<std::shared_ptr<ApplyInfo>> m_apply_list;
+    std::vector<std::shared_ptr<FriendInfo>> m_friend_list;
     std::shared_ptr<UserInfo> m_user_info;
     QMap<int, std::shared_ptr<FriendInfo>> m_friend_map;
 };
