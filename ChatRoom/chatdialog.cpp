@@ -91,6 +91,10 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     // 设置聊天按钮为选中状态
     ui->side_chat_lb->SetSelected(true);
+    //设置选中条目
+    SetSelectChatItem(0);
+    //更新聊天界面信息
+    SetSelectChatPage(0);
 
     //为searchlist 设置search edit
     ui->search_list->SetSearchEdit(ui->search_edit);
@@ -106,6 +110,17 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     // 连接searchlist跳转聊天信号
     connect(ui->search_list, &SearchList::sig_jump_chat_item, this, &ChatDialog::slot_jump_chat_item);
+
+
+
+    // 设置中心部件为chatpage
+    ui->stackedWidget->setCurrentWidget(ui->chat_page);
+
+    // 连接聊天列表点击信号
+    connect(ui->chat_user_list, &QListWidget::itemClicked, this, &ChatDialog::slot_item_clicked);
+
+    connect(ui->chat_page, &ChatPage::sig_append_send_chat_msg, this, &ChatDialog::slot_append_send_chat_msg);
+
 }
 
 void ChatDialog::AddLBGroup(StateWidget* lb)
@@ -288,10 +303,6 @@ void ChatDialog::slot_add_auth_friend(std::shared_ptr<AuthInfo> auth_info)
 
     UserManager::GetInstance().AddFriend(auth_info);
 
-    int randomValue = QRandomGenerator::global()->bounded(100);
-    int str_i = randomValue%strs.size();
-    int head_i = randomValue%heads.size();
-
     auto* chat_user_wid = new ChatUserItem();
     auto user_info = std::make_shared<UserInfo>(auth_info);
     chat_user_wid->SetInfo(user_info);
@@ -308,10 +319,6 @@ void ChatDialog::slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp)
     if(isFriend) return;
 
     UserManager::GetInstance().AddFriend(auth_rsp);
-
-    int randomValue = QRandomGenerator::global()->bounded(100);
-    int str_i = randomValue%strs.size();
-    int head_i = randomValue%heads.size();
 
     auto* chat_user_wid = new ChatUserItem();
     auto user_info = std::make_shared<UserInfo>(auth_rsp);
@@ -370,6 +377,82 @@ void ChatDialog::slot_loading_contact_user()
     loadingDialog->deleteLater();
 }
 
+void ChatDialog::slot_item_clicked(QListWidgetItem *item)
+{
+    QWidget *widget = ui->chat_user_list->itemWidget(item); // 获取自定义widget对象
+    if(!widget){
+        return;
+    }
+
+    // 对自定义widget进行操作， 将item 转化为基类ListItemBase
+    ListItemBase *customItem = qobject_cast<ListItemBase*>(widget);
+    if(!customItem){
+        return;
+    }
+
+    auto itemType = customItem->GetItemType();
+
+    if(itemType == ListItemType::Invalid_Item
+        || itemType == ListItemType::Group_Tip_Item){
+        return;
+    }
+
+    if(itemType == ListItemType::Chat_User_Item){
+        // 创建对话框，提示用户
+        qDebug()<< "contact user item clicked ";
+
+        auto chat_wid = qobject_cast<ChatUserItem*>(customItem);
+        auto user_info = chat_wid->GetUserInfo();
+        //跳转到聊天界面
+        ui->chat_page->SetUserInfo(user_info);
+        m_cur_chat_uid = user_info->m_uid;
+        return;
+    }
+
+}
+
+void ChatDialog::slot_append_send_chat_msg(std::shared_ptr<TextChatData> msgdata)
+{
+    if (m_cur_chat_uid == 0) {
+        return;
+    }
+
+    auto find_iter = m_chat_items_added.find(m_cur_chat_uid);
+    if (find_iter == m_chat_items_added.end()) {
+        return;
+    }
+
+    //转为widget
+    QWidget* widget = ui->chat_user_list->itemWidget(find_iter.value());
+    if (!widget) {
+        return;
+    }
+
+    //判断转化为自定义的widget
+    // 对自定义widget进行操作， 将item 转化为基类ListItemBase
+    ListItemBase* customItem = qobject_cast<ListItemBase*>(widget);
+    if (!customItem) {
+        return;
+    }
+
+    auto itemType = customItem->GetItemType();
+    if (itemType == ListItemType::Chat_User_Item) {
+        auto con_item = qobject_cast<ChatUserItem*>(customItem);
+        if (!con_item) {
+            return;
+        }
+
+        //设置信息
+        auto user_info = con_item->GetUserInfo();
+        user_info->m_chat_msgs.push_back(msgdata);
+        std::vector<std::shared_ptr<TextChatData>> msg_vec;
+        msg_vec.push_back(msgdata);
+        UserManager::GetInstance().AppendFriendChatMsg(m_cur_chat_uid, msg_vec);
+        return;
+    }
+
+}
+
 void ChatDialog::SetSelectChatItem(int uid)
 {
     if(ui->chat_user_list->count() <= 0){
@@ -413,6 +496,60 @@ void ChatDialog::SetSelectChatItem(int uid)
 
 void ChatDialog::SetSelectChatPage(int uid)
 {
+    if( ui->chat_user_list->count() <= 0){
+        return;
+    }
 
+    if (uid == 0) {
+        auto item = ui->chat_user_list->item(0);
+        //转为widget
+        QWidget* widget = ui->chat_user_list->itemWidget(item);
+        if (!widget) {
+            return;
+        }
+
+        auto con_item = qobject_cast<ChatUserItem*>(widget);
+        if (!con_item) {
+            return;
+        }
+
+        //设置信息
+        auto user_info = con_item->GetUserInfo();
+        ui->chat_page->SetUserInfo(user_info);
+        return;
+    }
+
+    auto find_iter = m_chat_items_added.find(uid);
+    if(find_iter == m_chat_items_added.end()){
+        return;
+    }
+
+    //转为widget
+    QWidget *widget = ui->chat_user_list->itemWidget(find_iter.value());
+    if(!widget){
+        return;
+    }
+
+    //判断转化为自定义的widget
+    // 对自定义widget进行操作， 将item 转化为基类ListItemBase
+    ListItemBase *customItem = qobject_cast<ListItemBase*>(widget);
+    if(!customItem){
+        qDebug()<< "qobject_cast<ListItemBase*>(widget) is nullptr";
+        return;
+    }
+
+    auto itemType = customItem->GetItemType();
+    if(itemType == ListItemType::Chat_User_Item){
+        auto con_item = qobject_cast<ChatUserItem*>(customItem);
+        if(!con_item){
+            return;
+        }
+
+        //设置信息
+        auto user_info = con_item->GetUserInfo();
+        ui->chat_page->SetUserInfo(user_info);
+
+        return;
+    }
 }
 

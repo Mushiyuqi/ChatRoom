@@ -172,10 +172,6 @@ void ContactUserList::slot_add_auth_firend(std::shared_ptr<AuthInfo> auth_info)
     bool isFriend = UserManager::GetInstance().CheckFriendById(auth_info->m_uid);
     if(isFriend) return;
 
-    int randomValue = QRandomGenerator::global()->bounded(100);
-    int str_i = randomValue%strs.size();
-    int head_i = randomValue%heads.size();
-
     auto *con_user_wid = new ContactUserItem();
     con_user_wid->SetInfo(auth_info);
     QListWidgetItem* item = new QListWidgetItem;
@@ -193,12 +189,8 @@ void ContactUserList::slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp)
     bool isFriend = UserManager::GetInstance().CheckFriendById(auth_rsp->m_uid);
     if(isFriend) return;
 
-    int randomValue = QRandomGenerator::global()->bounded(100);
-    int str_i = randomValue%strs.size();
-    int head_i = randomValue%heads.size();
-
     auto *con_user_wid = new ContactUserItem();
-    con_user_wid->SetInfo(auth_rsp->m_uid, auth_rsp->m_name, heads[head_i]);
+    con_user_wid->SetInfo(auth_rsp->m_uid, auth_rsp->m_name, auth_rsp->m_icon);
     QListWidgetItem* item = new QListWidgetItem;
     item->setSizeHint(con_user_wid->sizeHint());
 

@@ -21,6 +21,7 @@ public:
 
     int GetUid();
     QString GetName();
+    std::shared_ptr<UserInfo> GetUserInfo();
 
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
     bool AlreadyApply(int uid);
@@ -38,6 +39,8 @@ public:
     std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
     bool IsLoadConFin();
     void UpdateContactLoadedCount();
+
+    void AppendFriendChatMsg(int friend_id,std::vector<std::shared_ptr<TextChatData>>);
 private:
     UserManager() = default;
 

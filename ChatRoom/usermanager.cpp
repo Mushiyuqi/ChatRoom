@@ -38,6 +38,11 @@ QString UserManager::GetName()
     return m_user_info->m_name;
 }
 
+std::shared_ptr<UserInfo> UserManager::GetUserInfo()
+{
+    return m_user_info;
+}
+
 std::vector<std::shared_ptr<ApplyInfo> > UserManager::GetApplyList()
 {
     return m_apply_list;
@@ -214,4 +219,15 @@ void UserManager::UpdateContactLoadedCount()
     }
 
     m_contact_loaded = end;
+}
+
+void UserManager::AppendFriendChatMsg(int friend_id, std::vector<std::shared_ptr<TextChatData> > msgs)
+{
+    auto find_iter = m_friend_map.find(friend_id);
+    if(find_iter == m_friend_map.end()){
+        qDebug()<<"append friend uid  " << friend_id << " not found";
+        return;
+    }
+
+    find_iter.value()->AppendChatMsgs(msgs);
 }

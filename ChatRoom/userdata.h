@@ -1,7 +1,9 @@
 #pragma once
 #include <QString>
 #include <memory>
+#include <QJsonArray>
 
+class TextChatData;
 class SearchInfo {
 public:
     SearchInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon = "")
@@ -91,6 +93,12 @@ struct FriendInfo {
         m_nick(auth_rsp->m_nick),m_icon(auth_rsp->m_icon),m_name(auth_rsp->m_name),
         m_sex(auth_rsp->m_sex){}
 
+    void AppendChatMsgs(const std::vector<std::shared_ptr<TextChatData>> text_vec){
+        for(const auto & text: text_vec){
+            m_chat_msgs.push_back(text);
+        }
+    }
+
     int m_uid;
     QString m_name;
     QString m_nick;
@@ -99,7 +107,7 @@ struct FriendInfo {
     QString m_desc;
     QString m_back;
     QString m_last_msg;
-
+    std::vector<std::shared_ptr<TextChatData>> m_chat_msgs;
 };
 
 struct UserInfo {
@@ -129,7 +137,7 @@ struct UserInfo {
     UserInfo(std::shared_ptr<FriendInfo> friend_info):
         m_uid(friend_info->m_uid),m_name(friend_info->m_name),m_nick(friend_info->m_nick),
         m_icon(friend_info->m_icon),m_sex(friend_info->m_sex),m_last_msg(""){
-
+        m_chat_msgs = friend_info->m_chat_msgs;
     }
 
     int m_uid;
@@ -138,5 +146,31 @@ struct UserInfo {
     QString m_icon;
     int m_sex;
     QString m_last_msg;
+    std::vector<std::shared_ptr<TextChatData>> m_chat_msgs;
+};
 
+struct TextChatData{
+    TextChatData(QString msg_id, QString msg_content, int fromuid, int touid)
+        :m_msg_id(msg_id),m_msg_content(msg_content),m_from_uid(fromuid),m_to_uid(touid){
+
+    }
+    QString m_msg_id;
+    QString m_msg_content;
+    int m_from_uid;
+    int m_to_uid;
+};
+
+struct TextChatMsg{
+    TextChatMsg(int fromuid, int touid, QJsonArray arrays):
+        m_from_uid(fromuid), m_to_uid(touid){
+        for(const QJsonValue& msg_data : arrays){
+            auto content = msg_data["content"].toString();
+            auto msgid = msg_data["msgid"].toString();
+            auto msg_ptr = std::make_shared<TextChatData>(msgid, content,fromuid, touid);
+            m_chat_msgs.push_back(msg_ptr);
+        }
+    }
+    int m_to_uid;
+    int m_from_uid;
+    std::vector<std::shared_ptr<TextChatData>> m_chat_msgs;
 };

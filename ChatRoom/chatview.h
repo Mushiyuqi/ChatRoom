@@ -12,6 +12,7 @@ public:
     void AppendChatItem(QWidget* item);// 尾插
     void PrependChatItem(QWidget* item);// 头插
     void InsertChatItem(QWidget* before, QWidget* item);// 中间插入
+    void RemoveAllItem();
 
 protected:
     bool eventFilter(QObject* watched, QEvent* e) override;

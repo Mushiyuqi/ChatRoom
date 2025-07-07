@@ -32,13 +32,9 @@ ApplyFriendPage::~ApplyFriendPage()
 
 void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply)
 {
-    //先模拟头像随机，以后头像资源增加资源服务器后再显示
-    int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
-    int head_i = randomValue % heads.size();
-
     auto* apply_item = new ApplyFriendItem();
     auto apply_info = std::make_shared<ApplyInfo>(
-        apply->m_from_uid,apply->m_name, apply->m_desc,heads[head_i], apply->m_name, 0, 0);
+        apply->m_from_uid,apply->m_name, apply->m_desc, apply->m_icon, apply->m_name, 0, 0);
     apply_item->SetInfo( apply_info);
 
     QListWidgetItem* item = new QListWidgetItem;

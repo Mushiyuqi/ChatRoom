@@ -54,5 +54,8 @@ private slots:
     void slot_jump_chat_item(std::shared_ptr<SearchInfo> si);
     void slot_jump_chat_item_from_infopage(std::shared_ptr<UserInfo> ui);
     void slot_loading_contact_user();
+
+    void slot_item_clicked(QListWidgetItem *item);
+    void slot_append_send_chat_msg(std::shared_ptr<TextChatData> msgdata);
 };
 

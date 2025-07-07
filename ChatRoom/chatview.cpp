@@ -56,6 +56,24 @@ void ChatView::InsertChatItem(QWidget *before, QWidget *item)
 
 }
 
+void ChatView::RemoveAllItem()
+{
+    QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(m_pScrollArea->widget()->layout());
+
+    int count = layout->count();
+
+    for(int i = 0; i < count - 1; ++i){
+        QLayoutItem* item = layout->takeAt(0);
+        if(item){
+            if(QWidget* widget = item->widget()){
+                delete widget;
+            }
+
+            delete item;
+        }
+    }
+}
+
 bool ChatView::eventFilter(QObject *watched, QEvent *e)
 {
     if(e->type() == QEvent::Enter && watched == m_pScrollArea){
