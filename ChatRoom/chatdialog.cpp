@@ -11,7 +11,7 @@
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ChatDialog),
     m_mode(ChatUIMode::ChatMode), m_state(ChatUIMode::ChatMode),
-    m_b_loading(false)
+    m_b_loading(false), m_cur_chat_uid(0)
 {
     ui->setupUi(this);
     // 设置add按钮样式
@@ -98,6 +98,8 @@ ChatDialog::ChatDialog(QWidget *parent)
     //链接自己认证回复信号
     connect(&TcpManager::GetInstance(), &TcpManager::sig_auth_rsp, this, &ChatDialog::slot_auth_rsp);
 
+    // 连接searchlist跳转聊天信号
+    connect(ui->search_list, &SearchList::sig_jump_chat_item, this, &ChatDialog::slot_jump_chat_item);
 }
 
 void ChatDialog::AddLBGroup(StateWidget* lb)
@@ -295,5 +297,88 @@ void ChatDialog::slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp)
     ui->chat_user_list->insertItem(0, item);
     ui->chat_user_list->setItemWidget(item, chat_user_wid);
     m_chat_items_added.insert(auth_rsp->m_uid, item);
+}
+
+void ChatDialog::slot_jump_chat_item(std::shared_ptr<SearchInfo> si)
+{
+    auto find_iter = m_chat_items_added.find(si->m_uid);
+    if(find_iter != m_chat_items_added.end()){
+        ui->chat_user_list->scrollToItem(find_iter.value());
+        ui->side_chat_lb->SetSelected(true);
+        SetSelectChatItem(si->m_uid);
+        // 更新聊天界面信息
+        SetSelectChatPage(si->m_uid);
+        slot_side_chat();
+        return;
+    }
+
+    // 如果没有找到，则创建新的插入listwidget
+    auto* chat_user_wid = new ChatUserItem();
+    auto user_info = std::make_shared<UserInfo>(si);
+    chat_user_wid->SetInfo(user_info);
+    QListWidgetItem* item = new QListWidgetItem();
+
+    item->setSizeHint(chat_user_wid->sizeHint());
+    ui->chat_user_list->insertItem(0, item);
+    ui->chat_user_list->setItemWidget(item, chat_user_wid);
+
+    m_chat_items_added.insert(si->m_uid, item);
+
+    ui->side_chat_lb->SetSelected(true);
+    SetSelectChatItem(si->m_uid);
+    // 更新聊天界面信息
+    SetSelectChatPage(si->m_uid);
+    slot_side_chat();
+}
+
+void ChatDialog::slot_jump_chat_item_from_infopage(std::shared_ptr<UserInfo> ui)
+{
+
+}
+
+void ChatDialog::SetSelectChatItem(int uid)
+{
+    if(ui->chat_user_list->count() <= 0){
+        return;
+    }
+
+    if(uid == 0){
+        ui->chat_user_list->setCurrentRow(0);
+        QListWidgetItem *firstItem = ui->chat_user_list->item(0);
+        if(!firstItem){
+            return;
+        }
+
+        //转为widget
+        QWidget *widget = ui->chat_user_list->itemWidget(firstItem);
+        if(!widget){
+            return;
+        }
+
+        auto con_item = qobject_cast<ChatUserItem*>(widget);
+        if(!con_item){
+            return;
+        }
+
+        m_cur_chat_uid = con_item->GetUserInfo()->m_uid;
+
+        return;
+    }
+
+    auto find_iter = m_chat_items_added.find(uid);
+    if(find_iter == m_chat_items_added.end()){
+        qDebug() << "uid " <<uid<< " not found, set curent row 0";
+        ui->chat_user_list->setCurrentRow(0);
+        return;
+    }
+
+    ui->chat_user_list->setCurrentItem(find_iter.value());
+
+    m_cur_chat_uid = uid;
+}
+
+void ChatDialog::SetSelectChatPage(int uid)
+{
+
 }
 

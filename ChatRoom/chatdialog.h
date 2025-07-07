@@ -30,6 +30,8 @@ private:
     void AddLBGroup(StateWidget* lb);
     void ShowSearch(bool bsearch = false);
     void HandleGlobalMousePress(QMouseEvent* event);
+    void SetSelectChatItem(int uid);
+    void SetSelectChatPage(int uid);
 
     Ui::ChatDialog *ui;
 
@@ -38,6 +40,7 @@ private:
     bool m_b_loading;
     QList<StateWidget*> m_lb_list;
     QMap<int, QListWidgetItem*> m_chat_items_added;
+    int m_cur_chat_uid;
 
 private slots:
     void slot_loading_chat_user();
@@ -47,6 +50,7 @@ private slots:
     void slot_apply_friend(std::shared_ptr<AddFriendApply>);
     void slot_add_auth_friend(std::shared_ptr<AuthInfo> auth_info);
     void slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp);
-
+    void slot_jump_chat_item(std::shared_ptr<SearchInfo> si);
+    void slot_jump_chat_item_from_infopage(std::shared_ptr<UserInfo> ui);
 };
 

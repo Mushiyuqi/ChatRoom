@@ -33,3 +33,8 @@ void ChatUserItem::SetInfo(std::shared_ptr<UserInfo> user_info)
     ui->user_name_lb->setText(m_user_info->m_name);
     ui->user_chat_lb->setText(m_user_info->m_last_msg);
 }
+
+std::shared_ptr<UserInfo> ChatUserItem::GetUserInfo()
+{
+    return m_user_info;
+}

@@ -35,6 +35,6 @@ private slots:
     void slot_user_search(std::shared_ptr<SearchInfo> si);
 
 signals:
-
+    void sig_jump_chat_item(std::shared_ptr<SearchInfo> si);
 };
 

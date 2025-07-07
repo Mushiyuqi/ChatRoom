@@ -153,7 +153,15 @@ void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
     if (si == nullptr) {
         m_find_dlg = std::make_shared<FindFailDlg>(this);
     }else{
-        // todo 此处分两种情况，一种是搜多到已经是自己的朋友了，一种是未添加好友
+        // 判断是否是自己
+        if(si->m_uid == UserManager::GetInstance().GetUid())
+            return;
+        // 此处分两种情况，一种是搜多到已经是自己的朋友了，一种是未添加好友
+        bool bExist = UserManager::GetInstance().CheckFriendById(si->m_uid);
+        if(bExist){
+            emit sig_jump_chat_item(si);
+            return;
+        }
         m_find_dlg = std::make_shared<FindSuccessDlg>(this);
         std::dynamic_pointer_cast<FindSuccessDlg>(m_find_dlg)->SetSearchInfo(si);
     }

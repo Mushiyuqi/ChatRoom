@@ -50,6 +50,8 @@ void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply)
     ui->apply_friend_list->setItemWidget(item, apply_item);
 
     apply_item->ShowAddBtn(true);
+    auto uid = apply_item->GetUid();
+    m_unauth_items[uid] = apply_item;
 
     //收到审核好友信号
     connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
