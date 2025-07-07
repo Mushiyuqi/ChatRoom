@@ -289,8 +289,8 @@ bool MysqlDao::GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo
 	try {
 		// 准备SQL语句, 根据起始id和限制条数返回列表
 		std::unique_ptr<sql::PreparedStatement> pstmt(con->m_conn->prepareStatement(
-			"select apply.from_uid, apply.status, user.name, "
-			"user.nick, user.sex from friend_apply as apply join user on apply.from_uid = user.uid where apply.to_uid = ? "
+			"select apply.from_uid, apply.status, user.name, user.nick, user.sex, user.desc, user.icon "
+			"from friend_apply as apply join user on apply.from_uid = user.uid where apply.to_uid = ? "
 			"and apply.id > ? order by apply.id ASC LIMIT ? "));
 
 		pstmt->setInt(1, uid); // 将uid替换为你要查询的uid
@@ -305,7 +305,9 @@ bool MysqlDao::GetFriendApplyList(int uid, std::vector<std::shared_ptr<ApplyInfo
 			auto status = res->getInt("status");
 			auto nick = res->getString("nick");
 			auto sex = res->getInt("sex");
-			auto apply_ptr = std::make_shared<ApplyInfo>(uid, name, "", "", nick, sex, status);
+			auto desc = res->getString("desc");
+			auto icon = res->getString("icon");
+			auto apply_ptr = std::make_shared<ApplyInfo>(uid, name, desc, icon, nick, sex, status);
 			applyList.emplace_back(apply_ptr);
 		}
 		return true;

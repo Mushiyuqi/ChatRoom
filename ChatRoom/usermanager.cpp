@@ -1,5 +1,12 @@
 #include "usermanager.h"
 #include <QJsonArray>
+#include "global.h"
+
+UserManager::UserManager(const UserManager &):
+    m_user_info(nullptr), m_chat_loaded(0), m_contact_loaded(0)
+{
+
+}
 
 UserManager &UserManager::GetInstance()
 {
@@ -111,4 +118,100 @@ std::shared_ptr<FriendInfo> UserManager::GetFriendById(int uid)
     }
 
     return *find_it;
+}
+
+std::vector<std::shared_ptr<FriendInfo> > UserManager::GetChatListPerPage()
+{
+    std::vector<std::shared_ptr<FriendInfo>> friend_list;
+    int begin = m_chat_loaded;
+    int end = begin + CHAT_COUNT_PER_PAGE;
+
+    if (begin >= m_friend_list.size()) {
+        return friend_list;
+    }
+
+    if (end > m_friend_list.size()) {
+        friend_list = std::vector<std::shared_ptr<FriendInfo>>(
+            m_friend_list.begin() + begin, m_friend_list.end());
+        return friend_list;
+    }
+
+
+    friend_list = std::vector<std::shared_ptr<FriendInfo>>(
+        m_friend_list.begin() + begin, m_friend_list.begin()+ end);
+    return friend_list;
+}
+
+bool UserManager::IsLoadChatFin()
+{
+    if (m_chat_loaded >= m_friend_list.size()) {
+        return true;
+    }
+
+    return false;
+}
+
+void UserManager::UpdateChatLoadedCount()
+{
+    int begin = m_chat_loaded;
+    int end = begin + CHAT_COUNT_PER_PAGE;
+
+    if (begin >= m_friend_list.size()) {
+        return ;
+    }
+
+    if (end > m_friend_list.size()) {
+        m_chat_loaded = m_friend_list.size();
+        return ;
+    }
+
+    m_chat_loaded = end;
+}
+
+std::vector<std::shared_ptr<FriendInfo> > UserManager::GetConListPerPage()
+{
+    std::vector<std::shared_ptr<FriendInfo>> friend_list;
+    int begin = m_contact_loaded;
+    int end = begin + CHAT_COUNT_PER_PAGE;
+
+    if (begin >= m_friend_list.size()) {
+        return friend_list;
+    }
+
+    if (end > m_friend_list.size()) {
+        friend_list = std::vector<std::shared_ptr<FriendInfo>>(
+            m_friend_list.begin() + begin, m_friend_list.end());
+        return friend_list;
+    }
+
+
+    friend_list = std::vector<std::shared_ptr<FriendInfo>>(
+        m_friend_list.begin() + begin, m_friend_list.begin() + end);
+    return friend_list;
+}
+
+bool UserManager::IsLoadConFin()
+{
+    if (m_contact_loaded >= m_friend_list.size()) {
+        return true;
+    }
+
+    return false;
+}
+
+void UserManager::UpdateContactLoadedCount()
+{
+    int begin = m_contact_loaded;
+    int end = begin + CHAT_COUNT_PER_PAGE;
+
+    if (begin >= m_friend_list.size()) {
+        return;
+    }
+
+    if (end > m_friend_list.size()) {
+        m_contact_loaded = m_friend_list.size();
+        return;
+    }
+
+    m_contact_loaded = end;
 }

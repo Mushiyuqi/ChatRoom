@@ -10,7 +10,7 @@ class UserManager:public QObject
 {
 public:
     ~UserManager() = default;
-    UserManager(const UserManager&) = delete;
+    UserManager(const UserManager&);
     UserManager& operator=(const UserManager&) = delete;
 
     static UserManager& GetInstance();
@@ -31,6 +31,13 @@ public:
     void AddFriend(std::shared_ptr<AuthRsp> auth_rsp);
     void AddFriend(std::shared_ptr<AuthInfo> auth_info);
     std::shared_ptr<FriendInfo> GetFriendById(int uid);
+
+    std::vector<std::shared_ptr<FriendInfo>> GetChatListPerPage();
+    bool IsLoadChatFin();
+    void UpdateChatLoadedCount();
+    std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
+    bool IsLoadConFin();
+    void UpdateContactLoadedCount();
 private:
     UserManager() = default;
 
@@ -41,5 +48,7 @@ private:
     std::vector<std::shared_ptr<FriendInfo>> m_friend_list;
     std::shared_ptr<UserInfo> m_user_info;
     QMap<int, std::shared_ptr<FriendInfo>> m_friend_map;
+    int m_chat_loaded;
+    int m_contact_loaded;
 };
 

@@ -21,6 +21,7 @@ public:
     ~ChatDialog();
 
     void AddChatUserList();
+    void AddContactUserList();
     void ClearLabelState(StateWidget *lb);
 
 protected:
@@ -52,5 +53,6 @@ private slots:
     void slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp);
     void slot_jump_chat_item(std::shared_ptr<SearchInfo> si);
     void slot_jump_chat_item_from_infopage(std::shared_ptr<UserInfo> ui);
+    void slot_loading_contact_user();
 };
 

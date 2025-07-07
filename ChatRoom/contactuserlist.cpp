@@ -5,9 +5,10 @@
 #include "grouptipitem.h"
 #include "usermanager.h"
 #include <QRandomGenerator>
+#include "loadingdlg.h"
+#include <QTimer>
 
-
-ContactUserList::ContactUserList(QWidget *parent): m_add_friend_item(nullptr)
+ContactUserList::ContactUserList(QWidget *parent): m_add_friend_item(nullptr), m_load_pending(false)
 {
     Q_UNUSED(parent);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -17,6 +18,7 @@ ContactUserList::ContactUserList(QWidget *parent): m_add_friend_item(nullptr)
 
     //模拟从数据库或者后端传输过来的数据,进行列表加载
     AddContactUserList();
+
     //连接点击的信号和槽
     connect(this, &QListWidget::itemClicked, this, &ContactUserList::slot_item_clicked);
 
@@ -66,36 +68,6 @@ void ContactUserList::AddContactUserList()
     this->addItem(m_groupitem);
     this->setItemWidget(m_groupitem, groupCon);
     m_groupitem->setFlags(m_groupitem->flags() & ~Qt::ItemIsSelectable);
-
-    // //加载后端发送过来的好友列表
-    // auto con_list = UserManager::GetInstance().GetConListPerPage();
-    // for(auto & con_ele : con_list){
-    //     auto *con_user_wid = new ContactUserItem();
-    //     con_user_wid->SetInfo(con_ele->_uid,con_ele->_name, con_ele->_icon);
-    //     QListWidgetItem *item = new QListWidgetItem;
-    //     //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
-    //     item->setSizeHint(con_user_wid->sizeHint());
-    //     this->addItem(item);
-    //     this->setItemWidget(item, con_user_wid);
-    // }
-
-    // UserManager::GetInstance().UpdateContactLoadedCount();
-
-    // 模拟列表， 创建QListWidgetItem，并设置自定义的widget
-    for(int i = 0; i < 13; i++){
-        int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
-        int str_i = randomValue%strs.size();
-        int head_i = randomValue%heads.size();
-        int name_i = randomValue%names.size();
-
-        auto *con_user_wid = new ContactUserItem();
-        con_user_wid->SetInfo(0,names[name_i], heads[head_i]);
-        QListWidgetItem *item = new QListWidgetItem;
-        //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
-        item->setSizeHint(con_user_wid->sizeHint());
-        this->addItem(item);
-        this->setItemWidget(item, con_user_wid);
-    }
 }
 
 bool ContactUserList::eventFilter(QObject *watched, QEvent *event)
@@ -127,8 +99,21 @@ bool ContactUserList::eventFilter(QObject *watched, QEvent *event)
         //int pageSize = 10; // 每页加载的联系人数量
 
         if (maxScrollValue - currentValue <= 0) {
+            auto b_loaded = UserManager::GetInstance().IsLoadConFin();
+            if(b_loaded){
+                return true;
+            }
+
+            if(m_load_pending){
+                return true;
+            }
             // 滚动到底部，加载新的联系人
-            qDebug()<<"load more contact user";
+            qDebug()<<"load more chat user";
+            m_load_pending = true;
+
+            QTimer::singleShot(100, [this](){
+                m_load_pending = false;
+            });
             //发送信号通知聊天界面加载更多聊天内容
             emit sig_loading_contact_user();
         }

@@ -1,6 +1,8 @@
 #include "chatuserlist.h"
+#include "usermanager.h"
+#include <QTimer>
 
-ChatUserList::ChatUserList(QWidget *parent):QListWidget(parent)
+ChatUserList::ChatUserList(QWidget *parent):QListWidget(parent), m_load_pending(false)
 {
     // 关闭横向纵向滚动条
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -39,8 +41,21 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event)
         //int pageSize = 10; // 每页加载的联系人数量
 
         if (maxScrollValue - currentValue <= 0) {
+            auto b_loaded = UserManager::GetInstance().IsLoadChatFin();
+            if(b_loaded){
+                return true;
+            }
+
+            if(m_load_pending){
+                return true;
+            }
             // 滚动到底部，加载新的联系人
             qDebug()<<"load more chat user";
+            m_load_pending = true;
+
+            QTimer::singleShot(100, [this](){
+                m_load_pending = false;
+            });
             //发送信号通知聊天界面加载更多聊天内容
             emit sig_loading_chat_user();
         }

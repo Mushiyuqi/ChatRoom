@@ -145,6 +145,7 @@ void LogicSystem::RegisterCallBacks() {
             rspJson["sex"] = userInfo->sex;
             rspJson["icon"] = userInfo->icon;
 
+            // 获取好友申请列表
             std::vector<std::shared_ptr<ApplyInfo>> applyList;
             flag = GetFriendApplyList(uid, applyList);
             if(flag) {
