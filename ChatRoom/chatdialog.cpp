@@ -65,7 +65,7 @@ ChatDialog::ChatDialog(QWidget *parent)
             this, &ChatDialog::slot_loading_contact_user);
 
     // 侧边栏添加头像
-    QPixmap pixmap(":/resource/head_0.png"); // 加载图片
+    QPixmap pixmap(UserManager::GetInstance().GetUserInfo()->m_icon); // 加载图片
     ui->side_head_lb->setPixmap(pixmap); // 将图片设置到QLabel上
     QPixmap scaledPixmap = pixmap.scaled( ui->side_head_lb->size(), Qt::KeepAspectRatio); // 将图片缩放到label的大小
     ui->side_head_lb->setPixmap(scaledPixmap); // 将缩放后的图片设置到QLabel上
@@ -121,6 +121,8 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     connect(ui->chat_page, &ChatPage::sig_append_send_chat_msg, this, &ChatDialog::slot_append_send_chat_msg);
 
+    // 收到好友发送的消息
+    connect(&TcpManager::GetInstance(), &TcpManager::sig_text_chat_msg, this, &ChatDialog::slot_text_chat_msg);
 }
 
 void ChatDialog::AddLBGroup(StateWidget* lb)
@@ -453,6 +455,38 @@ void ChatDialog::slot_append_send_chat_msg(std::shared_ptr<TextChatData> msgdata
 
 }
 
+void ChatDialog::slot_text_chat_msg(std::shared_ptr<TextChatMsg> msg)
+{
+    auto find_iter = m_chat_items_added.find(msg->m_from_uid);
+    if(find_iter != m_chat_items_added.end()){
+        QWidget *widget = ui->chat_user_list->itemWidget(find_iter.value());
+        auto chat_wid = qobject_cast<ChatUserItem*>(widget);
+        if(!chat_wid){
+            return;
+        }
+        chat_wid->UpdateLastMsg(msg->m_chat_msgs);
+        //更新当前聊天页面记录
+        UpdateChatMsg(msg->m_chat_msgs);
+        UserManager::GetInstance().AppendFriendChatMsg(msg->m_from_uid, msg->m_chat_msgs);
+        return;
+    }
+
+    //如果没找到，则创建新的插入listwidget
+
+    auto* chat_user_wid = new ChatUserItem();
+    //查询好友信息
+    auto fi_ptr = UserManager::GetInstance().GetFriendById(msg->m_from_uid);
+    chat_user_wid->SetInfo(fi_ptr);
+    QListWidgetItem* item = new QListWidgetItem;
+    //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+    item->setSizeHint(chat_user_wid->sizeHint());
+    chat_user_wid->UpdateLastMsg(msg->m_chat_msgs);
+    UserManager::GetInstance().AppendFriendChatMsg(msg->m_from_uid,msg->m_chat_msgs);
+    ui->chat_user_list->insertItem(0, item);
+    ui->chat_user_list->setItemWidget(item, chat_user_wid);
+    m_chat_items_added.insert(msg->m_from_uid, item);
+}
+
 void ChatDialog::SetSelectChatItem(int uid)
 {
     if(ui->chat_user_list->count() <= 0){
@@ -550,6 +584,17 @@ void ChatDialog::SetSelectChatPage(int uid)
         ui->chat_page->SetUserInfo(user_info);
 
         return;
+    }
+}
+
+void ChatDialog::UpdateChatMsg(std::vector<std::shared_ptr<TextChatData> > msgdata)
+{
+    for(auto & msg : msgdata){
+        if(msg->m_from_uid != m_cur_chat_uid){
+            break;
+        }
+
+        ui->chat_page->AppendChatMsg(msg);
     }
 }
 

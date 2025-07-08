@@ -79,6 +79,32 @@ NotifyAuthFriend(ServerContext* context, const AuthFriendReq* request, AuthFrien
 
 Status ChatServiceImpl::NotifyTextChatMsg(grpc::ServerContext* context, const TextChatMsgReq* request,
     TextChatMsgRsp* response) {
+    auto touid = request->touid();
+    auto session = UserManager::GetInstance().GetSession(touid);
+    response->set_error(ErrorCodes::Success);
+    // 用户是否在本服务器
+    if(session == nullptr) {
+        response->set_error(ErrorCodes::UidInvalid);
+        return Status::OK;
+    }
+
+    // 内存中通知对方
+    Json::Value returnValue;
+    returnValue["error"] = ErrorCodes::Success;
+    returnValue["fromuid"] = request->fromuid();
+    returnValue["touid"] = request->touid();
+
+    // 将聊天数据组织为数组
+    Json::Value textMsgs;
+    for(auto& msg : request->textmsgs()) {
+        Json::Value textMsg;
+        textMsg["content"] = msg.msgcontent();
+        textMsg["msgid"] = msg.msgid();
+        textMsgs.append(textMsg);
+    }
+    returnValue["text_array"] = textMsgs;
+
+    session->Send(returnValue.toStyledString(), ID_NOTIFY_TEXT_CHAT_MSG);
     return Status::OK;
 }
 

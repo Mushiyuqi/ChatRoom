@@ -136,7 +136,7 @@ struct UserInfo {
 
     UserInfo(std::shared_ptr<FriendInfo> friend_info):
         m_uid(friend_info->m_uid),m_name(friend_info->m_name),m_nick(friend_info->m_nick),
-        m_icon(friend_info->m_icon),m_sex(friend_info->m_sex),m_last_msg(""){
+        m_icon(friend_info->m_icon),m_sex(friend_info->m_sex),m_last_msg(friend_info->m_last_msg){
         m_chat_msgs = friend_info->m_chat_msgs;
     }
 

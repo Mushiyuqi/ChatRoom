@@ -64,6 +64,26 @@ bool ChatGrpcClient::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<
 TextChatMsgRsp ChatGrpcClient::NotifyTextChatMsg(std::string server_ip, const TextChatMsgReq& req,
     const Json::Value& rtvalue) {
     TextChatMsgRsp rsp;
+    rsp.set_error(ErrorCodes::Success);
+    // 查询pool
+    auto find_iter = m_pools.find(server_ip);
+    if (find_iter == m_pools.end()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    auto &pool = find_iter->second;
+    ClientContext context;
+    auto stub = pool->GetConnection();
+    Status status = stub->NotifyTextChatMsg(&context, req, &rsp);
+
+    if (!status.ok()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        pool->RecycleConnection(std::move(stub));
+        return rsp;
+    }
+
+    pool->RecycleConnection(std::move(stub));
     return rsp;
 }
 

@@ -308,6 +308,57 @@ void TcpManager::InitHandlers()
         auto rsp = std::make_shared<AuthRsp>(uid, name, nick, icon, sex);
         emit sig_auth_rsp(rsp);
     });
+
+    // 处理发送消息服务器回包
+    m_handlers.insert(ReqId::ID_TEXT_CHAT_MSG, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+        // 自己的消息不做处理
+
+    });
+    // 处理通知发送消息服务器回包
+    m_handlers.insert(ReqId::ID_NOTIFY_TEXT_CHAT_MSG, [this](ReqId id, int len, QByteArray data){
+        Q_UNUSED(len);
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            return;
+        }
+
+        if (jsonObj["error"].toInt() != ErrorCodes::SUCCESS) {
+            return;
+        }
+
+
+        auto msgPtr = std::make_shared<TextChatMsg>(
+            jsonObj["fromuid"].toInt(), jsonObj["touid"].toInt(), jsonObj["text_array"].toArray());
+        emit sig_text_chat_msg(msgPtr);
+    });
 }
 
 void TcpManager::HandleMsg(ReqId id, int len, QByteArray data)

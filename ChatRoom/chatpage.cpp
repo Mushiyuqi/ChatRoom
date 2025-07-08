@@ -15,7 +15,7 @@ ChatPage::ChatPage(QWidget *parent)
     ui->setupUi(this);
 
     //设置按钮样式
-    ui->receive_btn->SetState("normal","hover","press");
+    // ui->receive_btn->SetState("normal","hover","press");
     ui->send_btn->SetState("normal","hover","press");
 
     //设置图标样式

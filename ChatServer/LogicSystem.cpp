@@ -345,30 +345,29 @@ void LogicSystem::RegisterCallBacks() {
             auto selfName = ConfigManager::GetInstance()["SelfServer"]["Name"];
             // 直接通知对方有认证通过消息
             if(toipValue == selfName) {
-                return;
-                // auto toSession = UserManager::GetInstance().GetSession(touid);
-                // if(toSession !=  nullptr) {
-                //     // 在内存直接通知对方
-                //     Json::Value notify;
-                //     notify["error"] = ErrorCodes::Success;
-                //     notify["touid"] = touid;
-                //     notify["fromuid"] = uid;
-                //     std::string baseKey = USER_BASE_INFO + std::to_string(uid);
-                //     auto user_info = std::make_shared<UserInfo>();
-                //     flag = GetBaseInfo(baseKey, uid, user_info);
-                //     if(flag) {
-                //         notify["name"] = user_info->name;
-                //         notify["icon"] = user_info->icon;
-                //         notify["nick"] = user_info->nick;
-                //         notify["sex"] = user_info->sex;
-                //     }else {
-                //         notify["error"] = ErrorCodes::UidInvalid;
-                //     }
-                //
-                //     toSession->Send(notify.toStyledString(), ReqId::ID_NOTIFY_AUTH_FRIEND);
-                // }
-                //
-                // return ;
+                auto toSession = UserManager::GetInstance().GetSession(touid);
+                if(toSession !=  nullptr) {
+                    // 在内存直接通知对方
+                    Json::Value notify;
+                    notify["error"] = ErrorCodes::Success;
+                    notify["touid"] = touid;
+                    notify["fromuid"] = uid;
+                    std::string baseKey = USER_BASE_INFO + std::to_string(uid);
+                    auto user_info = std::make_shared<UserInfo>();
+                    flag = GetBaseInfo(baseKey, uid, user_info);
+                    if(flag) {
+                        notify["name"] = user_info->name;
+                        notify["icon"] = user_info->icon;
+                        notify["nick"] = user_info->nick;
+                        notify["sex"] = user_info->sex;
+                    }else {
+                        notify["error"] = ErrorCodes::UidInvalid;
+                    }
+
+                    toSession->Send(notify.toStyledString(), ReqId::ID_NOTIFY_AUTH_FRIEND);
+                }
+
+                return ;
             }
 
             // 通知该服务器发送添加好友通知
@@ -376,6 +375,65 @@ void LogicSystem::RegisterCallBacks() {
             auth_req.set_fromuid(uid);
             auth_req.set_touid(touid);
             ChatGrpcClient::GetInstance().NotifyAuthFriend(toipValue, auth_req);
+    };
+    // 发送文本数据
+    m_fun_callbacks[ReqId::ID_TEXT_CHAT_MSG] =
+        [this](std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data) {
+            // 注册返回函数
+            Json::Value returnJson;
+            returnJson["error"] = ErrorCodes::Success;
+            Defer defer([this, &returnJson, session]() {
+                const std::string rspStr = returnJson.toStyledString();
+                session->Send(rspStr, ReqId::ID_TEXT_CHAT_MSG);
+            });
+
+            // 处理Json数据
+            Json::Reader reader;
+            Json::Value value;
+            reader.parse(msg_data, value);
+            // 获取数据
+            auto uid = value["fromuid"].asInt();
+            auto touid = value["touid"].asInt();
+
+            const Json::Value arrays = value["text_array"];
+
+            returnJson["error"] = ErrorCodes::Success;
+            returnJson["text_array"] = arrays;
+            returnJson["fromuid"] = uid;
+            returnJson["touid"] = touid;
+
+            // 查询redis 查询touid对应的server ip
+            auto touidStr = std::to_string(touid);
+            auto toipKey = USERIPPREFIX + touidStr;
+            std::string toipValue;
+            bool flag = RedisManager::GetInstance().Get(toipKey, toipValue);
+            if(!flag) {
+                returnJson["error"] = ErrorCodes::UidInvalid;
+                return;
+            }
+
+            auto selfName = ConfigManager::GetInstance()["SelfServer"]["Name"];
+            // 直接通知对方有消息
+            if(selfName == toipValue) {
+                auto toSession = UserManager::GetInstance().GetSession(touid);
+                if(toSession !=  nullptr) {
+                    toSession->Send(returnJson.toStyledString(), ReqId::ID_NOTIFY_TEXT_CHAT_MSG);
+                }
+
+                return;
+            }
+
+            TextChatMsgReq req;
+            req.set_fromuid(uid);
+            req.set_touid(touid);
+            for(const auto& item : arrays) {
+                auto* text_msg = req.add_textmsgs();
+                text_msg->set_msgid(item["msgid"].asString());
+                text_msg->set_msgcontent(item["content"].asString());
+            }
+
+            // 发送通知
+            ChatGrpcClient::GetInstance().NotifyTextChatMsg(toipValue, req, returnJson);
     };
 }
 

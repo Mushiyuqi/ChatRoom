@@ -34,7 +34,24 @@ void ChatUserItem::SetInfo(std::shared_ptr<UserInfo> user_info)
     ui->user_chat_lb->setText(m_user_info->m_last_msg);
 }
 
+void ChatUserItem::SetInfo(std::shared_ptr<FriendInfo> friend_info)
+{
+    SetInfo(std::make_shared<UserInfo>(friend_info));
+}
+
 std::shared_ptr<UserInfo> ChatUserItem::GetUserInfo()
 {
     return m_user_info;
+}
+
+void ChatUserItem::UpdateLastMsg(std::vector<std::shared_ptr<TextChatData>> msgs)
+{
+    QString last_msg = "";
+    for (auto& msg : msgs) {
+        last_msg = msg->m_msg_content;
+        m_user_info->m_chat_msgs.push_back(msg);
+    }
+
+    m_user_info->m_last_msg = last_msg;
+    ui->user_chat_lb->setText(m_user_info->m_last_msg);
 }
